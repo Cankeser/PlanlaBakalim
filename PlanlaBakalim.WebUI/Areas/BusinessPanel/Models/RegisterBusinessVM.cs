@@ -11,10 +11,8 @@ namespace PlanlaBakalim.WebUI.Areas.BusinessPanel.Models
         [Display(Name = "İşletme Adı")]
         public string BusinessName { get; set; }
 
-        [Required(ErrorMessage = "İşletme e-posta adresi zorunludur.")]
-        [EmailAddress(ErrorMessage = "Geçerli bir e-posta adresi giriniz.")]
         [Display(Name = "İşletme E-Posta")]
-        public string BusinessEmail { get; set; }
+        public string? BusinessEmail { get; set; }
 
         [Required(ErrorMessage = "İşletme telefon numarası zorunludur.")]
         [Phone(ErrorMessage = "Geçerli bir telefon numarası giriniz.")]

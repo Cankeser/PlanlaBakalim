@@ -49,46 +49,50 @@ namespace PlanlaBakalim.WebUI.Areas.BusinessPanel.Controllers
         public async Task<IActionResult> Update(BusinessUpdateVM model)
         {
             if (!ModelState.IsValid)
+                return View("Index", model);
+
+            try
             {
+                var business = await _businessService.Queryable()
+                    .Include(x => x.BusinessAddress)
+                    .ThenInclude(x => x.District)
+                    .ThenInclude(x => x.City)
+                    .FirstOrDefaultAsync(x => x.Id == model.Id && x.IsActive);
+
+                if (business == null)
+                    return RedirectToAction("Index", "Settings");
+
+                // Business bilgilerini güncelle
+                business.Name = model.Name;
+                business.PhoneNumber = model.Phone;
+                business.Email = model.Email;
+                business.Website = model.Website;
+                business.Description = model.Description;
+                business.AppointmentSlotDuration = model.AppointmentSlotDuration;
+                business.BusinessAddress.StreetAddress = model.Address;
+                business.BusinessAddress.DistrictId = model.DistrictId;
+
+                // Fotoğraf yükleme
+                if (model.Photo != null)
+                {
+                    if (!string.IsNullOrEmpty(business.ProfileImageUrl))
+                        FileHelper.FileRemover(business.ProfileImageUrl);
+
+                    business.ProfileImageUrl = await FileHelper.FileLoaderAsync(model.Photo, "/img/business/");
+                }
+
+                _businessService.Update(business);
+                await _businessService.SaveChangesAsync();
+
+                return RedirectToAction("Index", "Settings");
+            }
+            catch (Exception ex)
+            {
+                // Loglama için uygun bir mekanizma kullanabilirsin
+                TempData["Error"] = "Bir hata oluştu: " + ex.Message;
                 return View("Index", model);
             }
-            var business = await _businessService.Queryable()
-                .Include(x => x.BusinessAddress)
-                .ThenInclude(x => x.District)
-                .ThenInclude(x => x.City)
-                .FirstOrDefaultAsync(x => x.Id == model.Id);
-
-            if (business == null)
-                return RedirectToAction("Index", "Settings");
-
-            business.Name = model.Name;
-            business.PhoneNumber = model.Phone;
-            business.Email = model.Email;
-            business.Website = model.Website;
-            business.Description = model.Description;
-            business.AppointmentSlotDuration = model.AppointmentSlotDuration;
-            business.BusinessAddress.StreetAddress = model.Address;
-            business.BusinessAddress.DistrictId = model.DistrictId;
-
-            if (model.Photo != null)
-            {
-                if (!string.IsNullOrEmpty(business.ProfileImageUrl))
-                {
-                    FileHelper.FileRemover(business.ProfileImageUrl);
-                }
-                business.ProfileImageUrl = await FileHelper.FileLoaderAsync(model.Photo);
-
-                if (!string.IsNullOrEmpty(model.ProfileImageUrl))
-                {
-                    // eski resmi sil
-                    FileHelper.FileRemover(model.ProfileImageUrl);
-                }
-            }
-
-            _businessService.Update(business);
-            await _businessService.SaveChangesAsync();
-
-            return RedirectToAction("Index", "Settings");
         }
+
     }
 }

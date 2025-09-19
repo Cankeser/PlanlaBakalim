@@ -7,25 +7,32 @@ namespace PlanlaBakalim.Utilities
     {
         public static async Task<string> FileLoaderAsync(IFormFile formFile, string filePath = "/img/")
         {
-            string fileName = "";
-            if (formFile != null && formFile.Length > 0)
+            string uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", filePath.TrimStart('/'));
+            if (!Directory.Exists(uploadsPath))
             {
-                fileName = formFile.FileName.ToLower();
-                string directory = Directory.GetCurrentDirectory() + "/wwwroot" + filePath + fileName;
-                using var stream = new FileStream(directory, FileMode.Create);
-                await formFile.CopyToAsync(stream);
+                Directory.CreateDirectory(uploadsPath);
             }
-            return filePath+fileName;
+            string extension = Path.GetExtension(formFile.FileName);
+            string fileName = Guid.NewGuid().ToString("N") + extension;
+
+            string fullPath = Path.Combine(uploadsPath, fileName);
+
+            using var stream = new FileStream(fullPath, FileMode.Create);
+            await formFile.CopyToAsync(stream);
+
+            return filePath + fileName;
+
         }
         public static bool FileRemover(string fileName)
         {
-            string directory = Directory.GetCurrentDirectory() + "/wwwroot" + fileName;
-            if (File.Exists(directory))
+            string fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", fileName.TrimStart('/'));
+            if (File.Exists(fullPath))
             {
-                File.Delete(directory);
+                File.Delete(fullPath);
                 return true;
             }
             return false;
         }
+
     }
 }

@@ -78,41 +78,6 @@ app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization(); 
 
-// Admin kullanıcısı oluştur
-using (var scope = app.Services.CreateScope())
-{
-    var context = scope.ServiceProvider.GetRequiredService<PlanlaBakalim.Data.DatabaseContext>();
-    
-    // Mevcut admin kullanıcısını kontrol et
-    var existingAdmin = await context.Users.FirstOrDefaultAsync(u => u.Role == PlanlaBakalim.Core.Enums.UserRole.Admin);
-    
-    if (existingAdmin == null)
-    {
-        // Yeni admin oluştur
-        var adminUser = new PlanlaBakalim.Core.Entities.User
-        {
-            FullName = "Admin Kullanıcı",
-            Email = "admin@planlabakalim.com",
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123"),
-            Role = PlanlaBakalim.Core.Enums.UserRole.Admin,
-            IsActive = true,
-            CreatedDate = DateTime.Now
-        };
-        
-        context.Users.Add(adminUser);
-        await context.SaveChangesAsync();
-        Console.WriteLine("Admin kullanıcısı oluşturuldu: admin@planlabakalim.com / admin123");
-    }
-    else
-    {
-        // Mevcut admin'in şifresini güncelle
-        existingAdmin.PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123");
-        existingAdmin.IsActive = true;
-        existingAdmin.Email = "admin@planlabakalim.com"; // Email adresini düzelt
-        await context.SaveChangesAsync();
-        Console.WriteLine($"Mevcut admin kullanıcısı güncellendi: {existingAdmin.Email} / admin123");
-    }
-}
 
 app.MapControllerRoute(
   name: "businessPanel",

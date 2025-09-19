@@ -281,12 +281,25 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (res.success && res.data.length > 0) {
                         res.data.forEach(slot => {
                             const formatted = slot.time.substring(0, 5);
-                            const div = document.createElement('div');
-                            div.className = 'appointment-time-slot' + (slot.isAvailable ? '' : ' disabled');
-                            div.dataset.time = formatted;
-                            if (this.selectedTime === formatted) div.classList.add('selected'); // önceki seçim
-                            div.innerHTML = `<div class="time">${formatted}</div><div class="status">${slot.isAvailable ? 'Müsait' : 'Dolu'}</div><div class="status-dot ${slot.isAvailable ? 'available' : 'occupied'}"></div>`;
-                            container.appendChild(div);
+
+                            // Tarih dizesini YYYY-MM-DD formatına dönüştürme (gerekirse)
+                            // Örneğin: '19.09.2025' -> '2025-09-19'
+                            const dateParts = this.selectedDate.split('.');
+                            const formattedDate = dateParts.length === 3 ? `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}` : this.selectedDate;
+
+                            // Geçmiş saat kontrolü için tam bir tarih nesnesi oluşturma
+                            const slotDateTime = new Date(`${formattedDate}T${slot.time}`);
+                            const now = new Date();
+                            const IsPast = slotDateTime < now;
+
+                            if (!IsPast) {
+                                const div = document.createElement('div');
+                                div.className = 'appointment-time-slot' + (slot.isAvailable ? '' : ' disabled');
+                                div.dataset.time = formatted;
+                                if (this.selectedTime === formatted) div.classList.add('selected');
+                                div.innerHTML = `<div class="time">${formatted}</div><div class="status">${slot.isAvailable ? 'Müsait' : 'Dolu'}</div><div class="status-dot ${slot.isAvailable ? 'available' : 'occupied'}"></div>`;
+                                container.appendChild(div);
+                            }
                         });
                     } else {
                         container.innerHTML = '<div class="appointment-no-slots"><i class="fas fa-exclamation-circle"></i><p>Seçilen gün için uygun saat yok.</p></div>';

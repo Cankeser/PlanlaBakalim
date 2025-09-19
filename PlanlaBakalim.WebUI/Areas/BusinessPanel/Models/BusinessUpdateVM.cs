@@ -27,6 +27,7 @@ namespace PlanlaBakalim.WebUI.Areas.BusinessPanel.Models
         [Display(Name = "İlçe")]
         [Range(1, int.MaxValue, ErrorMessage = "*İlçe Seçimi Zorunlu")]
         public int DistrictId { get; set; }
+        [Display(Name = "Randevu Süresi (Dakika)")]
         public int AppointmentSlotDuration { get; set; }
 
         public string? ProfileImageUrl { get; set; }

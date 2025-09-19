@@ -85,18 +85,38 @@ namespace PlanlaBakalim.WebUI.Areas.BusinessPanel.Controllers
             if (file == null)
                 return Json(new { success = false, message = "Fotoğraf yüklenmedi" });
 
-            var gallery = new Gallery
+            var businessClaim = User.Claims.FirstOrDefault(c => c.Type == "BusinessId")?.Value;
+            if (!int.TryParse(businessClaim, out var businessId))
+                return Json(new { success = false, message = "Business bilgisi alınamadı" });
+
+            try
             {
-                ImageUrl = await FileHelper.FileLoaderAsync(file),
-                Title = title,
-                IsVisibleProfile = showProfile,
-                BusinessId = 1
-            };
+                var imageUrl = await FileHelper.FileLoaderAsync(file, "/img/business/");
+                if (string.IsNullOrWhiteSpace(imageUrl))
+                    return Json(new { success = false, message = "Fotoğraf yüklenemedi" });
 
-            _galleryService.Add(gallery);
-            await _galleryService.SaveChangesAsync();
+                var gallery = new Gallery
+                {
+                    ImageUrl = imageUrl,
+                    Title = string.IsNullOrWhiteSpace(title) ? "Başlık Yok" : title,
+                    IsVisibleProfile = showProfile,
+                    BusinessId = businessId
+                };
 
-            return Json(new { success = true, message = "Fotoğraf başarıyla eklendi" });
+                _galleryService.Add(gallery);
+                await _galleryService.SaveChangesAsync();
+
+                return Json(new { success = true, message = "Fotoğraf başarıyla eklendi" });
+            }
+            catch (DbUpdateException dbEx)
+            {
+                var innerMsg = dbEx.InnerException?.Message ?? dbEx.Message;
+                return Json(new { success = false, message = "DB hatası: " + innerMsg });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Sunucu hatası: " + ex.Message });
+            }
         }
 
 

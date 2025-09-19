@@ -16,13 +16,7 @@
                 <p>@Model.Business.Owner.FullName</p>
             </div>
         </div>
-        <div class="header-actions">
-            <button class="icon-btn notification-btn" onclick="showNotifications()" aria-label="Bildirimler">
-                <i class="bi bi-bell"></i>
-                <span class="badge pulse">3</span>
-            </button>
-
-        </div>
+       
     </div>
 </header>
 
@@ -312,46 +306,6 @@
         </div>
     </div>
 </main>
-<div class="notification-modal" id="notificationModal">
-    <div class="notification-modal-content">
-        <div class="notification-modal-header">
-            <h3>Bildirimler</h3>
-            <div class="header-actions">
-                <button class="close-btn" onclick="closeNotificationModal()">
-                    <i class="bi bi-x"></i>
-                </button>
-            </div>
-        </div>
-        <div class="notification-modal-body">
-            <div class="notification-item unread">
-                <div class="notification-content">
-                    <h4>Yeni Randevu</h4>
-                    <p>Ayşe Yılmaz bugün 14:30'da randevu aldı</p>
-                    <div class="notification-time">5 dakika önce</div>
-                </div>
-            </div>
-
-            <div class="notification-item unread">
-                <div class="notification-content">
-                    <h4>Ödeme Alındı</h4>
-                    <p>₺150 ödeme başarıyla alındı</p>
-                    <div class="notification-time">1 saat önce</div>
-                </div>
-            </div>
-
-            <div class="notification-item">
-                <div class="notification-content">
-                    <h4>Hizmet Tamamlandı</h4>
-                    <p>Araç bakım hizmeti tamamlandı</p>
-                    <div class="notification-time">2 saat önce</div>
-                </div>
-            </div>
-        </div>
-        <div class="notification-modal-footer">
-            <a href="@Url.Action("Index", "Appointment", new { area = "BusinessPanel" })" class="view-all-btn">Tümünü Görüntüle</a>
-        </div>
-    </div>
-</div>
 
 @section Scripts {
     <script>

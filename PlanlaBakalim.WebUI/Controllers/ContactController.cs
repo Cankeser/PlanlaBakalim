@@ -1,16 +1,20 @@
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PlanlaBakalim.Data;
 using PlanlaBakalim.Core.Entities;
+using PlanlaBakalim.Service.Abstract;
+using System.Threading.Tasks;
 
 namespace PlanlaBakalim.WebUI.Controllers
 {
-    public class ContactController : Controller
+    [Route("Iletisim")]
+    [AllowAnonymous]
+    public class ContactController : BaseController
     {
-        private readonly DatabaseContext _context;
+        private readonly IService<Contact> _service;
 
-        public ContactController(DatabaseContext context)
+        public ContactController(IService<Contact> service)
         {
-            _context = context;
+           _service = service;
         }
 
         public IActionResult Index()
@@ -21,21 +25,31 @@ namespace PlanlaBakalim.WebUI.Controllers
         [HttpPost]
         public async Task<IActionResult> Index(Contact model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                model.CreatedDate = DateTime.Now;
-                model.IsRead = false;
-                
-                _context.Contacts.Add(model);
-                await _context.SaveChangesAsync();
-                
-                TempData["SuccessMessage"] = "Mesajınız başarıyla gönderildi!";
-                return RedirectToAction("Thanks");
+              return NotFound();
             }
-            
-            return View(model);
-        }
+            var contact = new Contact
+            {
+                Name = model.Name,
+                Email = model.Email,
+                Subject = model.Subject,
+                Message = model.Message,
+            };
+            _service.Add(contact);
+           var result= await _service.SaveChangesAsync();
+            if (result>0)
+            {
+                ViewBag.Message = "Mesajınız Başarıyla Gönderildi";
+                ModelState.Clear();
+            }
+            else
+            {
+                ViewBag.Message = "Mesajınız Gönderilirken Bir Hata Oluştu";
+            }
 
-       
+
+            return View();
+        }
     }
 }

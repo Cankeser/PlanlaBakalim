@@ -354,7 +354,7 @@
                                     <div class="favorite-image">
                                         <img src="@(favorite.Business?.ProfileImageUrl ?? "/img/default-business.jpg")"
                                              alt="@(favorite.Business?.Name ?? "İşletme")">
-                                        <button class="favorite-remove">
+                                        <button class="favorite-btn active" data-businessid="@favorite.BusinessId">
                                             <i class="fas fa-heart"></i>
                                         </button>
                                     </div>

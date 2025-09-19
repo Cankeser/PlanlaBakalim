@@ -1,61 +1,156 @@
-@model Contact
-
-@{
-    ViewData["Title"] = "İletişim";
-}
-
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="text-center"><i class="fas fa-envelope"></i> İletişim</h2>
-                </div>
-                <div class="card-body">
-                    @if (TempData["SuccessMessage"] != null)
-                    {
-                        <div class="alert alert-success">
-                            @TempData["SuccessMessage"]
-                        </div>
-                    }
-
-                    <form asp-action="Index" method="post">
-                        <div class="mb-3">
-                            <label asp-for="Name" class="form-label">Adınız Soyadınız</label>
-                            <input asp-for="Name" class="form-control" placeholder="Adınızı ve soyadınızı giriniz" />
-                            <span asp-validation-for="Name" class="text-danger"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Email" class="form-label">E-posta Adresiniz</label>
-                            <input asp-for="Email" class="form-control" placeholder="ornek@email.com" />
-                            <span asp-validation-for="Email" class="text-danger"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Subject" class="form-label">Konu</label>
-                            <input asp-for="Subject" class="form-control" placeholder="Mesajınızın konusunu belirtiniz" />
-                            <span asp-validation-for="Subject" class="text-danger"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Message" class="form-label">Mesajınız</label>
-                            <textarea asp-for="Message" class="form-control" rows="5" placeholder="Mesajınızı buraya yazınız..."></textarea>
-                            <span asp-validation-for="Message" class="text-danger"></span>
-                        </div>
-
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="fas fa-paper-plane"></i> Mesajı Gönder
-                            </button>
-                        </div>
-                    </form>
+﻿
+    <!-- Hero Section -->
+    <section class="hero contact-hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1>Bizimle <span>İletişime</span> Geçin</h1>
+                    <p>Sorularınız, önerileriniz veya işbirliği talepleriniz mi var? Biz buradayız ve size yardımcı olmaktan mutluluk duyarız!</p>
                 </div>
             </div>
         </div>
-    </div>
-</div>
+    </section>
+    @model Contact
+    <!-- Contact Section -->
+    <section class="contact-section">
+        <div class="container">
+            <div class="contact-grid">
+          
+            <div class="contact-info-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-info-circle"></i> İletişim Bilgileri</h2>
+                    <p>Bize ulaşmanın birkaç yolu var</p>
+                </div>
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+                <div class="contact-methods">
+                    <div class="contact-method">
+                        <div class="method-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="method-content">
+                            <h3>E-posta</h3>
+                            <p>info@planlabakalim.com</p>
+                            <span class="response-time">24 saat içinde yanıt</span>
+                        </div>
+                    </div>
+
+                    <div class="contact-method">
+                        <div class="method-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="method-content">
+                            <h3>Telefon</h3>
+                            <p>+90 212 123 45 67</p>
+                            <span class="response-time">Pazartesi - Cuma, 09:00 - 18:00</span>
+                        </div>
+                    </div>
+
+                    <div class="contact-method">
+                        <div class="method-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="method-content">
+                            <h3>Adres</h3>
+                            <p>Bağdat Caddesi 123<br>Kadıköy, İstanbul</p>
+                            <span class="response-time">Merkez ofis</span>
+                        </div>
+                    </div>
+
+                    <div class="contact-method">
+                        <div class="method-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="method-content">
+                            <h3>Canlı Destek</h3>
+                            <p>Web sitesi üzerinden</p>
+                            <span class="response-time">Anında yanıt</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="social-links-section">
+                    <h3>Sosyal Medyada Takip Edin</h3>
+                    <div class="social-links">
+                        <a href="#" class="social-link facebook">
+                            <i class="fab fa-facebook-f"></i>
+                            <span>Facebook</span>
+                        </a>
+                        <a href="#" class="social-link twitter">
+                            <i class="fab fa-twitter"></i>
+                            <span>Twitter</span>
+                        </a>
+                        <a href="#" class="social-link instagram">
+                            <i class="fab fa-instagram"></i>
+                            <span>Instagram</span>
+                        </a>
+                        <a href="#" class="social-link linkedin">
+                            <i class="fab fa-linkedin-in"></i>
+                            <span>LinkedIn</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+             <div class="contact-form-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-envelope"></i> Mesaj Gönderin</h2>
+                        <p>Formu doldurun, en kısa sürede size dönelim</p>
+                    </div>
+                @if (ViewBag.Message != null)
+                {
+                    <div class="contact-message">
+                        @ViewBag.Message
+                    </div>
+
+                }
+                <form class="contact-form" method="post" asp-action="Index" asp-controller="Contact">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="name">Adınız</label>
+                                <input type="text" asp-for="@Model.Name" placeholder="Adınızı girin" required>
+                                <span asp-validation-for="@Model.Name" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">E-posta </label>
+                                <input type="email" asp-for="@Model.Email" placeholder="E-posta adresinizi girin" required>
+                            <span asp-validation-for="@Model.Email" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="subject">Konu </label>
+                            <select id="subject" asp-for="@Model.Subject" name="subject" required>
+                                <option value="">Konu seçin</option>
+                            <option value="Genel Bilgi">Genel Bilgi</option>
+                            <option value="Teknik Destek">Teknik Destek</option>
+                            <option value="İşbirliği">İşbirliği</option>
+                            <option value="Geri Bildirim">Geri Bildirim</option>
+                            <option value="Şikayet">Şikayet</option>
+                            <option value="Diğer">Diğer</option>
+                            </select>
+                        <span asp-validation-for="@Model.Subject" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Mesajınız</label>
+                            <textarea asp-for="@Model.Message" rows="6" placeholder="Mesajınızı buraya yazın..." required></textarea>
+                        <span asp-validation-for="@Model.Message" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="privacy" name="privacy" required>
+                                <span class="checkmark"></span>
+                                <span class="checkbox-text">
+                                    <a href="#privacy" target="_blank">Gizlilik Politikası</a>'nı okudum ve kabul ediyorum *
+                                </span>
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-submit">
+                            <i class="fas fa-paper-plane"></i>
+                            <span>Mesajı Gönder</span>
+                        </button>
+                    </form>
+             
+            </div>       
+
+        </div>
+        
+    </div>
+    </section>

@@ -5,7 +5,7 @@
         <div class="appointment-business-info-content">
             <input type="hidden" id="business-id" name="businessId" value="@Model.Id" required>
             <div class="appointment-business-avatar">
-                <img src="@Model.ProfileImageUrl" alt="@Model.Name">
+                <img src="@(Model.ProfileImageUrl ?? "/img/default-business.jpg")" alt="@Model.Name">
             </div>
             <div class="appointment-business-details">
                 <h3>@Model.Name</h3>

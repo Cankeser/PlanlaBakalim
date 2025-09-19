@@ -1,0 +1,138 @@
+﻿@model IEnumerable<Gallery>
+@section Styles {
+    <link href="~/BusinessPanel/css/gallery.css" rel="stylesheet" />
+}
+<header class="app-header">
+    <div class="header-top">
+        <div class="header-left">
+            <button class="back-btn" onclick="window.location.href='index.html'">
+                <i class="bi bi-arrow-left"></i>
+            </button>
+            <h1 class="header-title">Galeri</h1>
+        </div>
+        <div class="header-right">
+            <button class="add-photo-btn" onclick="showAddModal()">
+                <i class="bi bi-plus-lg"></i>
+            </button>
+        </div>
+    </div>
+</header>
+<!-- Main Content -->
+<main class="main-content">
+    <div class="container">
+
+          @if (!Model.Any() && Model.Count() == 0)
+            {
+                <div class="no-photos">
+                    <i class="bi bi-camera"></i>
+                    <h3>Henüz fotoğraf eklenmemiş</h3>
+                    <p>Galeriye fotoğraf eklemek için yukarıdaki "+" butonuna tıklayın.</p>
+                </div>
+            }
+   
+         else{ 
+             <div class="gallery-grid">
+            @foreach (var image in Model)
+            {
+                <div class="photo-card">
+                    <div class="photo-image">
+                        <img src="@image.ImageUrl" alt="@image.Title">
+                        <div class="photo-overlay">
+                            <div class="photo-actions">
+                                <form method="post" asp-area="BusinessPanel" asp-controller="Gallery" asp-action="DeletePhoto" style="display:inline;">
+                                    <input type="hidden" name="id" value="@image.Id" />
+                                    <button type="submit" class="action-btn delete">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="photo-info">
+                        <h4>@image.Title</h4>
+                        <div class="photo-options">
+                            <label class="option-checkbox">
+                                <input type="checkbox" id="showProfile-@image.Id" @(image.IsVisibleProfile ? "checked" : "") onclick="toggleProfileVisibility(@image.Id)">
+                                <span class="checkmark"></span>
+                                Profilde Göster
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            } 
+            </div>
+            }
+      
+    </div>
+</main>
+<!-- Add Photo Modal -->
+<div class="modal" id="addModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Fotoğraf Ekle</h3>
+            <button class="close-btn" onclick="hideAddModal()">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form id="addPhotoForm" enctype="multipart/form-data">
+                <!-- Upload Area -->
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-content" id="uploadContent">
+                        <i class="bi bi-cloud-upload"></i>
+                        <h4>Fotoğraf Yükle</h4>
+                        <p>Dosya seç veya sürükle</p>
+                    </div>
+                    <div class="preview-content" id="previewContent" style="display: none;">
+                        <img id="previewImage" src="" alt="Ön İzleme">
+                        <button type="button" class="remove-preview-btn" id="removePreviewBtn">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    </div>
+                    <input type="file" name="file" id="fileInput" accept="image/*" style="display: none;">
+                </div>
+
+                <!-- Başlık -->
+                <div class="form-group">
+                    <input type="text" placeholder="Başlık" name="title" id="photoTitle" required>
+                </div>
+
+                <!-- Profilde göster -->
+                <div class="form-group">
+                    <label class="modal-checkbox">
+                        <input type="checkbox" name="showProfile" id="showProfile" value="true" checked>
+                        <span class="modal-checkmark"></span>
+                        Profilde Göster
+                    </label>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn-cancel" onclick="hideAddModal()">İptal</button>
+            <button type="button" class="btn-save" id="submitPhotoBtn">Ekle</button>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts
+{
+   <script src="~/BusinessPanel/js/gallery.js"></script>
+    <script>
+        @if (TempData["ToastMessage"] != null)
+        {
+                <text>
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: '@TempData["ToastMessage"]',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true
+                });
+                </text>
+        }
+    </script>
+}

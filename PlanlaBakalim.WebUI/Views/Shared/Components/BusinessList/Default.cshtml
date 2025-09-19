@@ -1,0 +1,84 @@
+﻿@using PlanlaBakalim.Core.Enums
+@model IEnumerable<BusinessVM>
+
+<div class="business-grid">
+    @foreach (var business in Model)
+    {
+        <div class="ci-business-card">
+            <div class="business-image">
+                <img src="@(business.ProfileImageUrl ?? "/img/default-business.jpg")" alt="@business.Name">
+
+                <div class="business-status @(business.IsOpenNow ? "open" : "closed")">
+                    @(business.IsOpenNow ? "Açık" : "Kapalı")
+                </div>
+
+                <button class="favorite-btn @(business.IsFavorited ? "active" : "")" data-businessid="@business.Id">
+                    <i class="@(business.IsFavorited ? "fas fa-heart" : "far fa-heart")"></i>
+                </button>
+
+            </div>
+            <div class="business-content">
+                <div class="business-header">
+                    <h3>@business.Name</h3>
+                    @if (business.ReviewCount > 0)
+                    {
+                        <div class="business-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span>
+                                @($"{business.AverageRating:0.0} ({business.ReviewCount})")
+                            </span>
+                        </div>
+                    }
+                </div>
+                <div class="business-category">@business.CategoryName</div>
+                <div class="business-info">
+                    <span><i class="fas fa-map-marker-alt"></i> @business.Address</span>
+                    <span><i class="fas fa-clock"></i> @business.WorkingHours</span>
+                </div>
+                <div class="favorite-actions">
+                
+                        <a asp-controller="Business" asp-action="BusinessDetail" asp-route-Id="@business.Id" asp-route-name="@UrlConverter.ConvertToUrl(business.Name)" class="btn-detail">İşletme Detayı</a>
+                        <a class="btn-book" asp-controller="Appointment" asp-action="Index" asp-route-BusinessId="@business.Id">Randevu Al</a>
+                </div>
+            </div>
+        </div>
+    }
+
+</div>
+
+@section scripts {
+    <script>
+    function addToFavorites(businessId) {
+            fetch('/Favorites/AddToFavorites?businessId=' + businessId, {
+                method: 'POST',
+                headers: {
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                }
+            })
+            .then(response => {
+                if(response.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Başarılı!',
+                        text: 'Favorilere eklendi!'
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Hata!',
+                        text: 'Bu işletme zaten favorilerde!'
+                    });
+                }
+            })
+            .catch(() => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Hata!',
+                    text: 'Bir şeyler yanlış gitti'
+                });
+            });
+        }
+    </script>
+}

@@ -1,0 +1,288 @@
+﻿@section Styles {
+    <link href="~/BusinessPanel/css/subscription.css" rel="stylesheet" />
+}
+<header class="app-header">
+    <div class="header-top">
+        <div class="header-left">
+            <button class="back-btn" onclick="window.location.href='index.html'">
+                <i class="bi bi-arrow-left"></i>
+            </button>
+            <div class="header-title">
+                <h1>Abonelik</h1>
+                <p>Plan ve ödeme bilgileri</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <!-- Bildirim butonu kaldırıldı -->
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<main class="main-content">
+    <div class="container">
+        <!-- Current Plan -->
+        <div class="current-plan">
+            <div class="plan-card">
+                <div class="plan-header">
+                    <div class="plan-title">
+                        <h2>Premium Plan</h2>
+                        <span class="plan-status">Aktif</span>
+                    </div>
+                    <div class="plan-price">
+                        <span class="amount">₺299</span>
+                        <span class="period">/ay</span>
+                    </div>
+                </div>
+                <div class="plan-info">
+                    <div class="info-item">
+                        <i class="bi bi-calendar-event"></i>
+                        <span>Sonraki ödeme: 15 Nisan 2024</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="bi bi-infinity"></i>
+                        <span>Sınırsız randevu</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="bi bi-headset"></i>
+                        <span>7/24 destek</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Plan Options -->
+        <div class="plan-options">
+            <h3>Plan Seçenekleri</h3>
+            <div class="options-grid">
+                <div class="option-card">
+                    <div class="option-header">
+                        <h4>Aylık Plan</h4>
+                        <div class="option-price">₺299<span>/ay</span></div>
+                    </div>
+                    <ul class="option-features">
+                        <li>Sınırsız randevu</li>
+                        <li>Gelişmiş analitik</li>
+                        <li>7/24 destek</li>
+                        <li>Özel temalar</li>
+                        <li>Mobil uygulama</li>
+                    </ul>
+                    <button class="option-btn" onclick="selectPlan('monthly')">Bu Planı Seç</button>
+                </div>
+
+                <div class="option-card active">
+                    <div class="option-header">
+                        <h4>Yıllık Plan</h4>
+                        <div class="option-price">₺2.990<span>/yıl</span></div>
+                        <span class="current-tag">Mevcut</span>
+                        <div class="savings-badge">2 Ay Bedava</div>
+                    </div>
+                    <ul class="option-features">
+                        <li>Sınırsız randevu</li>
+                        <li>Gelişmiş analitik</li>
+                        <li>7/24 destek</li>
+                        <li>Özel temalar</li>
+                        <li>Mobil uygulama</li>
+                        <li>Öncelikli destek</li>
+                        <li>API erişimi</li>
+                    </ul>
+                    <button class="option-btn active" disabled>Mevcut Plan</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Methods -->
+        <div class="payment-section">
+            <div class="section-header">
+                <h3>Ödeme Yöntemleri</h3>
+                <button class="add-btn" onclick="addPaymentMethod()">
+                    <i class="bi bi-plus"></i>
+                    Ekle
+                </button>
+            </div>
+
+            <div class="payment-list">
+                <div class="payment-item default">
+                    <div class="payment-info">
+                        <i class="bi bi-credit-card"></i>
+                        <div class="payment-details">
+                            <h4>Visa ****4589</h4>
+                            <p>Son kullanma: 12/25</p>
+                        </div>
+                        <span class="default-label">Varsayılan</span>
+                    </div>
+                    <div class="payment-actions">
+                        <button class="action-btn" onclick="editPayment(1)">Düzenle</button>
+                        <button class="action-btn delete" onclick="showDeleteConfirm(1)">Sil</button>
+                    </div>
+                </div>
+
+                <div class="payment-item">
+                    <div class="payment-info">
+                        <i class="bi bi-credit-card"></i>
+                        <div class="payment-details">
+                            <h4>Mastercard ****1234</h4>
+                            <p>Son kullanma: 08/26</p>
+                        </div>
+                    </div>
+                    <div class="payment-actions">
+                        <button class="action-btn" onclick="setDefault(2)">Varsayılan</button>
+                        <button class="action-btn" onclick="editPayment(2)">Düzenle</button>
+                        <button class="action-btn delete" onclick="showDeleteConfirm(2)">Sil</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Billing -->
+        <div class="billing-section">
+            <div class="section-header">
+                <h3>Faturalar</h3>
+                <button class="download-btn" onclick="downloadAll()">
+                    <i class="bi bi-download"></i>
+                    Tümünü İndir
+                </button>
+            </div>
+
+            <div class="billing-list">
+                <div class="billing-item">
+                    <div class="billing-icon">
+                        <i class="bi bi-file-text"></i>
+                    </div>
+                    <div class="billing-details">
+                        <h4>Mart 2024</h4>
+                        <p>Premium Plan</p>
+                        <span class="billing-date">15 Mart 2024</span>
+                    </div>
+                    <div class="billing-amount">
+                        <span class="amount">₺299</span>
+                        <span class="status">Ödendi</span>
+                    </div>
+                    <button class="download-invoice" onclick="downloadInvoice('mar-2024')">
+                        <i class="bi bi-download"></i>
+                    </button>
+                </div>
+
+                <div class="billing-item">
+                    <div class="billing-icon">
+                        <i class="bi bi-file-text"></i>
+                    </div>
+                    <div class="billing-details">
+                        <h4>Şubat 2024</h4>
+                        <p>Premium Plan</p>
+                        <span class="billing-date">15 Şubat 2024</span>
+                    </div>
+                    <div class="billing-amount">
+                        <span class="amount">₺299</span>
+                        <span class="status">Ödendi</span>
+                    </div>
+                    <button class="download-invoice" onclick="downloadInvoice('feb-2024')">
+                        <i class="bi bi-download"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div class="modal" id="paymentModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Ödeme Yöntemi Ekle</h3>
+            <button class="close-btn" onclick="closeModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <form id="paymentForm">
+                <div class="form-group">
+                    <label>Kart Numarası</label>
+                    <input type="text" placeholder="1234 5678 9012 3456" maxlength="19">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Son Kullanma</label>
+                        <input type="text" placeholder="MM/YY">
+                    </div>
+                    <div class="form-group">
+                        <label>CVV</label>
+                        <input type="text" placeholder="123" maxlength="4">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Kart Sahibi</label>
+                    <input type="text" placeholder="Ad Soyad">
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" id="defaultPayment">
+                    <label for="defaultPayment">Varsayılan yap</label>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal()">İptal</button>
+            <button class="btn btn-primary" onclick="savePayment()">Kaydet</button>
+        </div>
+    </div>
+</div>
+<!-- Edit Payment Modal -->
+<div class="modal" id="editPaymentModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Ödeme Yöntemi Düzenle</h3>
+            <button class="close-btn" onclick="closeModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <form id="editPaymentForm">
+                <div class="form-group">
+                    <label>Kart Numarası</label>
+                    <input type="text" placeholder="1234 5678 9012 3456" maxlength="19">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Son Kullanma</label>
+                        <input type="text" placeholder="MM/YY">
+                    </div>
+                    <div class="form-group">
+                        <label>CVV</label>
+                        <input type="text" placeholder="123" maxlength="4">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Kart Sahibi</label>
+                    <input type="text" placeholder="Ad Soyad">
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" id="editDefaultPayment">
+                    <label for="editDefaultPayment">Varsayılan yap</label>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal()">İptal</button>
+            <button class="btn btn-primary" onclick="updatePayment()">Güncelle</button>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal" id="deleteConfirmModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Ödeme Yöntemi Sil</h3>
+            <button class="close-btn" onclick="closeModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="confirm-message">
+                <i class="bi bi-exclamation-triangle text-warning"></i>
+                <p>Bu ödeme yöntemini silmek istediğinizden emin misiniz?</p>
+                <p class="text-muted">Bu işlem geri alınamaz.</p>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal()">İptal</button>
+            <button class="btn btn-danger" onclick="confirmDelete()">Evet, Sil</button>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script src="~/BusinessPanel/js/subscription.js"></script>
+}

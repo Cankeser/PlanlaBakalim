@@ -1,0 +1,344 @@
+@model IEnumerable<PlanlaBakalim.Core.Entities.Appointment>
+@{
+    ViewData["Title"] = "Randevu Yönetimi";
+}
+
+@Html.AntiForgeryToken()
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-calendar-alt"></i> Randevu Yönetimi</h2>
+    <div>
+        <a href="@Url.Action("Create")" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Yeni Randevu
+        </a>
+    </div>
+</div>
+
+<!-- İstatistik Kartları -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stat-card primary">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-xs">Toplam Randevu</div>
+                    <div class="h5">@Model.Count()</div>
+                </div>
+                <i class="fas fa-calendar-alt stat-icon text-primary"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card success">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-xs">Onaylanan</div>
+                    <div class="h5">@Model.Count(a => a.Status == PlanlaBakalim.Core.Enums.AppointmentStatus.Confirmed)</div>
+                </div>
+                <i class="fas fa-check-circle stat-icon text-success"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card warning">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-xs">Bekleyen</div>
+                    <div class="h5">@Model.Count(a => a.Status == PlanlaBakalim.Core.Enums.AppointmentStatus.Pending)</div>
+                </div>
+                <i class="fas fa-hourglass-half stat-icon text-warning"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card danger">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-xs">İptal Edilen</div>
+                    <div class="h5">@Model.Count(a => a.Status == PlanlaBakalim.Core.Enums.AppointmentStatus.Cancelled)</div>
+                </div>
+                <i class="fas fa-times-circle stat-icon text-danger"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Randevu Listesi -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">
+            <i class="fas fa-list"></i> Randevu Listesi
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-admin">
+                <thead>
+                    <tr>
+                        <th>Müşteri</th>
+                        <th>İşletme</th>
+                        <th>Çalışan</th>
+                        <th>Tarih & Saat</th>
+                        <th>Durum</th>
+                        <th>Not</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var appointment in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="~/img/UserProfile.jpg" class="rounded-circle me-2" width="40" height="40" alt="User">
+                                    <div>
+                                        <div class="fw-bold">@(appointment.User?.FullName ?? appointment.GuestFullName)</div>
+                                        <small class="text-muted">@(appointment.User?.Email ?? appointment.GuestEmail)</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <div class="fw-bold">@appointment.Business?.Name</div>
+                                    <small class="text-muted">@appointment.Business?.Category?.Name</small>
+                                </div>
+                            </td>
+                            <td>
+                                @if (appointment.Employee != null && appointment.Employee.User != null)
+                                {
+                                    <div>
+                                        <div class="fw-bold">@appointment.Employee.User.FullName</div>
+                                        <small class="text-muted">@appointment.Employee.Position</small>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Çalışan yok</span>
+                                }
+                            </td>
+                            <td>
+                                <div>
+                                    <div class="fw-bold">@appointment.AppointmentDate.ToString("dd.MM.yyyy")</div>
+                                    <small class="text-muted">@appointment.AppointmentTime.ToString("c")</small>
+                                </div>
+                            </td>
+                            <td>
+                                @switch (appointment.Status)
+                                {
+                                    case PlanlaBakalim.Core.Enums.AppointmentStatus.Pending:
+                                        <span class="badge bg-warning">Beklemede</span>
+                                        break;
+                                    case PlanlaBakalim.Core.Enums.AppointmentStatus.Confirmed:
+                                        <span class="badge bg-success">Onaylandı</span>
+                                        break;
+                                    case PlanlaBakalim.Core.Enums.AppointmentStatus.Cancelled:
+                                        <span class="badge bg-danger">İptal</span>
+                                        break;
+                                    case PlanlaBakalim.Core.Enums.AppointmentStatus.Completed:
+                                        <span class="badge bg-info">Tamamlandı</span>
+                                        break;
+                                    default:
+                                        <span class="badge bg-secondary">@appointment.Status</span>
+                                        break;
+                                }
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(appointment.Note))
+                                {
+                                    <span class="text-truncate d-inline-block" style="max-width: 150px;" title="@appointment.Note">
+                                        @appointment.Note
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Not yok</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="@Url.Action("Details", "Appointments", new { area = "Admin", id = appointment.Id })" 
+                                       class="btn btn-sm btn-outline-primary" title="Detaylar">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="@Url.Action("Edit", "Appointments", new { area = "Admin", id = appointment.Id })" 
+                                       class="btn btn-sm btn-outline-warning" title="Düzenle">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    @if (appointment.Status == PlanlaBakalim.Core.Enums.AppointmentStatus.Pending)
+                                    {
+                                        <button class="btn btn-sm btn-outline-success" 
+                                                onclick="updateAppointmentStatus(@appointment.Id, 2)" 
+                                                title="Onayla">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    }
+                                    @if (appointment.Status != PlanlaBakalim.Core.Enums.AppointmentStatus.Cancelled)
+                                    {
+                                        <button class="btn btn-sm btn-outline-danger" 
+                                                onclick="updateAppointmentStatus(@appointment.Id, 4)" 
+                                                title="İptal Et">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    }
+                                    <button class="btn btn-sm btn-outline-danger" 
+                                            onclick="deleteAppointment(@appointment.Id)" 
+                                            title="Sil">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function updateAppointmentStatus(appointmentId, status) {
+            const statusText = status === 1 ? 'onaylamak' : 'iptal etmek';
+            const message = `Bu randevuyu ${statusText} istediğinizden emin misiniz?`;
+            
+            if (confirm(message)) {
+                fetch(`@Url.Action("UpdateStatus", "Appointments", new { area = "Admin" })/${appointmentId}?status=${status}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        AdminPanel.showAlert('İşlem sırasında bir hata oluştu.', 'danger');
+                    }
+                })
+                .catch(error => {
+                    AdminPanel.showAlert('İşlem sırasında bir hata oluştu.', 'danger');
+                });
+            }
+        }
+
+        function deleteAppointment(appointmentId) {
+            const message = 'Bu randevuyu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!';
+            
+            if (confirm(message)) {
+                fetch(`@Url.Action("Delete", "Appointments", new { area = "Admin" })/${appointmentId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        AdminPanel.showAlert('İşlem sırasında bir hata oluştu.', 'danger');
+                    }
+                })
+                .catch(error => {
+                    AdminPanel.showAlert('İşlem sırasında bir hata oluştu.', 'danger');
+                });
+            }
+        }
+    </script>
+}
+
+<!-- Pagination -->
+@if (ViewBag.TotalPages > 1)
+{
+    <nav aria-label="Sayfa navigasyonu" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <!-- Previous Page -->
+            @if (ViewBag.CurrentPage > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage - 1, pageSize = ViewBag.PageSize })">
+                        <i class="fas fa-chevron-left"></i> Önceki
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">
+                        <i class="fas fa-chevron-left"></i> Önceki
+                    </span>
+                </li>
+            }
+
+            <!-- Page Numbers -->
+            @{
+                int startPage = Math.Max(1, ViewBag.CurrentPage - 2);
+                int endPage = Math.Min(ViewBag.TotalPages, ViewBag.CurrentPage + 2);
+            }
+
+            @if (startPage > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { page = 1, pageSize = ViewBag.PageSize })">1</a>
+                </li>
+                @if (startPage > 2)
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                }
+            }
+
+            @for (int i = startPage; i <= endPage; i++)
+            {
+                <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { page = i, pageSize = ViewBag.PageSize })">@i</a>
+                </li>
+            }
+
+            @if (endPage < ViewBag.TotalPages)
+            {
+                @if (endPage < ViewBag.TotalPages - 1)
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                }
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.TotalPages, pageSize = ViewBag.PageSize })">@ViewBag.TotalPages</a>
+                </li>
+            }
+
+            <!-- Next Page -->
+            @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage + 1, pageSize = ViewBag.PageSize })">
+                        Sonraki <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">
+                        Sonraki <i class="fas fa-chevron-right"></i>
+                    </span>
+                </li>
+            }
+        </ul>
+        
+        <!-- Page Info -->
+        <div class="text-center text-muted">
+            <small>
+                Sayfa @ViewBag.CurrentPage / @ViewBag.TotalPages 
+                (@ViewBag.TotalCount toplam kayıt)
+            </small>
+        </div>
+    </nav>
+}
+

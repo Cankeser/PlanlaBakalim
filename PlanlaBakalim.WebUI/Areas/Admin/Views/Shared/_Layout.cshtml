@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - PlanlaBakalim Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="~/Admin/css/admin.css" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Mobile Menu Toggle -->
+        <button class="mobile-menu-toggle d-lg-none" id="mobileMenuToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <!-- Sidebar Overlay for Mobile -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h3><i class="fas fa-crown"></i> Admin Panel</h3>
+                <p>PlanlaBakalim Yönetim</p>
+            </div>
+            <div class="sidebar-menu">
+                <ul>
+                    <li><a href="@Url.Action("Index", "Home")" class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="@Url.Action("Index", "Users")" class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Users" ? "active" : "")"><i class="fas fa-users"></i> Kullanıcılar</a></li>
+                    <li><a href="@Url.Action("Index", "Businesses")" class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Businesses" ? "active" : "")"><i class="fas fa-store"></i> İşletmeler</a></li>
+                    <li><a href="@Url.Action("Index", "Employees")" class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Employees" ? "active" : "")"><i class="fas fa-user-tie"></i> Çalışanlar</a></li>
+                    <li><a href="@Url.Action("Index", "Appointments")" class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Appointments" ? "active" : "")"><i class="fas fa-calendar-alt"></i> Randevular</a></li>
+                    <li><a href="@Url.Action("Index", "Reviews")" class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Reviews" ? "active" : "")"><i class="fas fa-star"></i> Yorumlar</a></li>
+                    <li><a href="@Url.Action("Index", "Categories")" class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Categories" ? "active" : "")"><i class="fas fa-tags"></i> Kategoriler</a></li>
+                    <li><a href="@Url.Action("Index", "Gallery")" class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Gallery" ? "active" : "")"><i class="fas fa-images"></i> Galeri</a></li>
+                    <li><a href="@Url.Action("Index", "Reports")" class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Reports" ? "active" : "")"><i class="fas fa-chart-bar"></i> Raporlar</a></li>
+                    <li><a href="@Url.Action("Index", "Settings")" class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Settings" ? "active" : "")"><i class="fas fa-cog"></i> Ayarlar</a></li>
+                </ul>
+            </div>
+        </nav>
+        
+        <main class="main-content">
+            <!-- Top Navigation -->
+            <nav class="navbar navbar-expand-lg navbar-admin">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="@Url.Action("Index", "Home")">
+                        <i class="fas fa-crown"></i> Admin Panel
+                    </a>
+                    <div class="navbar-nav ms-auto">
+                        <a class="nav-link" href="@Url.Action("Index", "Home", new { area = "" })" target="_blank">
+                            <i class="fas fa-external-link-alt"></i> Siteyi Görüntüle
+                        </a>
+                        <div class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user"></i> @User.Identity?.Name
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="@Url.Action("Index", "Profile")"><i class="fas fa-user me-2"></i>Profil</a></li>
+                                <li><a class="dropdown-item" href="@Url.Action("Index", "Settings")"><i class="fas fa-cog me-2"></i>Ayarlar</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form method="post" action="@Url.Action("Logout", "Auth")" class="d-inline">
+                                        <button type="submit" class="dropdown-item">
+                                            <i class="fas fa-sign-out-alt me-2"></i>Çıkış
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            
+            <!-- Main Content -->
+            <div class="content-wrapper">
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show fade-in" role="alert">
+                        <i class="fas fa-check-circle"></i> @TempData["Success"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+                
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show fade-in" role="alert">
+                        <i class="fas fa-exclamation-circle"></i> @TempData["Error"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+                
+                @RenderBody()
+            </div>
+        </main>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/Admin/js/admin.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+

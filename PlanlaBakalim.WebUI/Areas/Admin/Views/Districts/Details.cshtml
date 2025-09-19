@@ -1,0 +1,138 @@
+@model PlanlaBakalim.Core.Entities.District
+@{
+    ViewData["Title"] = "İlçe Detayları";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-building"></i> @Model.Name</h2>
+    <div>
+        <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-warning">
+            <i class="fas fa-edit"></i> Düzenle
+        </a>
+        <a href="@Url.Action("Index")" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Geri Dön
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-info-circle"></i> İlçe Bilgileri
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">İlçe Adı</label>
+                            <p class="form-control-plaintext">@Model.Name</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">İl</label>
+                            <p class="form-control-plaintext">
+                                <span class="badge bg-primary">@Model.City.Name</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Oluşturulma Tarihi</label>
+                            <p class="form-control-plaintext">@Model.CreatedDate.ToString("dd.MM.yyyy HH:mm")</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">İşletme Adresi Sayısı</label>
+                            <p class="form-control-plaintext">
+                                <span class="badge bg-info">@Model.BusinessAdresses.Count</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-bar"></i> İstatistikler
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center">
+                    <div class="h2 text-primary">@Model.BusinessAdresses.Count</div>
+                    <p class="text-muted">Toplam İşletme Adresi</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-store"></i> İşletme Adresleri (@Model.BusinessAdresses.Count)
+                </h5>
+            </div>
+            <div class="card-body">
+                @if (Model.BusinessAdresses.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>İşletme</th>
+                                    <th>Adres</th>
+                                    <th>Telefon</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var address in Model.BusinessAdresses)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-store text-success me-2"></i>
+                                                <span>@address.Business?.Name</span>
+                                            </div>
+                                        </td>
+                                        <td>@address.StreetAddress</td>
+                                        <td>@address.Business?.PhoneNumber</td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a href="@Url.Action("Details", "Businesses", new { area = "Admin", id = address.BusinessId })" 
+                                                   class="btn btn-sm btn-outline-primary" title="İşletme Detayları">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4">
+                        <i class="fas fa-store fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">Henüz işletme adresi bulunmuyor</h5>
+                        <p class="text-muted">Bu ilçeye işletme adresi eklemek için işletme oluşturun.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

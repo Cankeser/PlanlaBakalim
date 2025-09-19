@@ -1,0 +1,317 @@
+@model IEnumerable<PlanlaBakalim.Core.Entities.Category>
+@{
+    ViewData["Title"] = "Kategori Yönetimi";
+}
+
+@Html.AntiForgeryToken()
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-tags"></i> Kategori Yönetimi</h2>
+    <div>
+        <button class="btn btn-admin" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+            <i class="fas fa-plus"></i> Yeni Kategori
+        </button>
+    </div>
+</div>
+
+<!-- İstatistik Kartları -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stat-card primary">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-xs">Toplam Kategori</div>
+                    <div class="h5">@Model.Count()</div>
+                </div>
+                <i class="fas fa-tags stat-icon text-primary"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card success">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-xs">Aktif Kategori</div>
+                    <div class="h5">@Model.Count(c => c.IsActive)</div>
+                </div>
+                <i class="fas fa-check-circle stat-icon text-success"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card warning">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-xs">Ana Kategori</div>
+                    <div class="h5">@Model.Count(c => c.ParentId == null)</div>
+                </div>
+                <i class="fas fa-folder stat-icon text-warning"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card danger">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-xs">Alt Kategori</div>
+                    <div class="h5">@Model.Count(c => c.ParentId != null)</div>
+                </div>
+                <i class="fas fa-folder-open stat-icon text-danger"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Kategori Listesi -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">
+            <i class="fas fa-list"></i> Kategori Listesi
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-admin">
+                <thead>
+                    <tr>
+                        <th>Kategori</th>
+                        <th>Üst Kategori</th>
+                        <th>Açıklama</th>
+                        <th>Sıra</th>
+                        <th>İşletme Sayısı</th>
+                        <th>Durum</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var category in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    @if (category.ParentId == null)
+                                    {
+                                        <i class="fas fa-folder text-warning me-2"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="fas fa-folder-open text-info me-2"></i>
+                                    }
+                                    <div>
+                                        <div class="fw-bold">@category.Name</div>
+                                        <small class="text-muted">ID: @category.Id</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                @if (category.ParentCategory != null)
+                                {
+                                    <span class="badge bg-info">@category.ParentCategory.Name</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Ana Kategori</span>
+                                }
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(category.Description))
+                                {
+                                    <span class="text-truncate d-inline-block" style="max-width: 200px;" title="@category.Description">
+                                        @category.Description
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Açıklama yok</span>
+                                }
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">@category.OrderNo</span>
+                            </td>
+                            <td>
+                                <span class="badge bg-primary">@category.Businesses.Count</span>
+                            </td>
+                            <td>
+                                @if (category.IsActive)
+                                {
+                                    <span class="badge bg-success">Aktif</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Pasif</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="@Url.Action("Details", "Categories", new { area = "Admin", id = category.Id })" 
+                                       class="btn btn-sm btn-outline-primary" title="Detaylar">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <button class="btn btn-sm btn-outline-@(category.IsActive ? "warning" : "success")" 
+                                            onclick="toggleCategoryStatus(@category.Id, @category.IsActive.ToString().ToLower())" 
+                                            title="@(category.IsActive ? "Pasifleştir" : "Aktifleştir")">
+                                        <i class="fas fa-@(category.IsActive ? "ban" : "check")"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" 
+                                            onclick="deleteCategory(@category.Id)" 
+                                            title="Sil">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleCategoryStatus(categoryId, isActive) {
+            const action = isActive ? 'pasifleştir' : 'aktifleştir';
+            const message = `Bu kategoriyi ${action}mak istediğinizden emin misiniz?`;
+            
+            if (confirm(message)) {
+                fetch(`@Url.Action("ToggleStatus", "Categories", new { area = "Admin" })/${categoryId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        AdminPanel.showAlert('İşlem sırasında bir hata oluştu.', 'danger');
+                    }
+                })
+                .catch(error => {
+                    AdminPanel.showAlert('İşlem sırasında bir hata oluştu.', 'danger');
+                });
+            }
+        }
+
+        function deleteCategory(categoryId) {
+            const message = 'Bu kategoriyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!';
+            
+            if (confirm(message)) {
+                fetch(`@Url.Action("Delete", "Categories", new { area = "Admin" })/${categoryId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        AdminPanel.showAlert(data.message || 'İşlem sırasında bir hata oluştu.', 'danger');
+                    }
+                })
+                .catch(error => {
+                    AdminPanel.showAlert('İşlem sırasında bir hata oluştu.', 'danger');
+                });
+            }
+        }
+    </script>
+}
+
+<!-- Pagination -->
+@if (ViewBag.TotalPages > 1)
+{
+    <nav aria-label="Sayfa navigasyonu" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <!-- Previous Page -->
+            @if (ViewBag.CurrentPage > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage - 1, pageSize = ViewBag.PageSize })">
+                        <i class="fas fa-chevron-left"></i> Önceki
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">
+                        <i class="fas fa-chevron-left"></i> Önceki
+                    </span>
+                </li>
+            }
+
+            <!-- Page Numbers -->
+            @{
+                int startPage = Math.Max(1, ViewBag.CurrentPage - 2);
+                int endPage = Math.Min(ViewBag.TotalPages, ViewBag.CurrentPage + 2);
+            }
+
+            @if (startPage > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { page = 1, pageSize = ViewBag.PageSize })">1</a>
+                </li>
+                @if (startPage > 2)
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                }
+            }
+
+            @for (int i = startPage; i <= endPage; i++)
+            {
+                <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { page = i, pageSize = ViewBag.PageSize })">@i</a>
+                </li>
+            }
+
+            @if (endPage < ViewBag.TotalPages)
+            {
+                @if (endPage < ViewBag.TotalPages - 1)
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                }
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.TotalPages, pageSize = ViewBag.PageSize })">@ViewBag.TotalPages</a>
+                </li>
+            }
+
+            <!-- Next Page -->
+            @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage + 1, pageSize = ViewBag.PageSize })">
+                        Sonraki <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">
+                        Sonraki <i class="fas fa-chevron-right"></i>
+                    </span>
+                </li>
+            }
+        </ul>
+    </nav>
+
+    <!-- Page Info -->
+    <div class="text-center text-muted mt-2">
+        <small>
+            Sayfa @ViewBag.CurrentPage / @ViewBag.TotalPages 
+            (Toplam @ViewBag.TotalCount kayıt)
+        </small>
+    </div>
+}
+

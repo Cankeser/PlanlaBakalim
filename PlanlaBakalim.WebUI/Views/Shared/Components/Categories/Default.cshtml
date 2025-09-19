@@ -1,0 +1,55 @@
+﻿@model Dictionary<int, List<Category>>
+@{
+    var mode = ViewData["Mode"] as string ?? "desktop";
+}
+
+@if (Model.ContainsKey(0))
+{
+    @foreach (var mainCategory in Model[0])
+    {
+        var hasSubCategories = Model.ContainsKey(mainCategory.Id) && Model[mainCategory.Id].Count > 0;
+
+        @if (mode == "desktop")
+        {
+            <div class="dropdown-section">
+                <a href="/category/@mainCategory.Name">@mainCategory.Name</a>
+                @if (hasSubCategories)
+                {
+                    @foreach (var subCategory in Model[mainCategory.Id])
+                    {
+                        <a href="/category/@subCategory.Name" class="dropdown-item">
+                            @subCategory.Name
+                        </a>
+                    }
+                }
+            </div>
+        }
+        else
+        {
+            <div class="mobile-category">
+                <div class="mobile-category-header">
+                    <a asp-controller="Business" asp-action="Category"
+                       class="@(hasSubCategories ? "link-auto" : "link-full")">
+                        @mainCategory.Name
+                    </a>
+
+                    @if (hasSubCategories)
+                    {
+                        <i class="fas fa-chevron-right"></i>
+                    }
+                </div>
+                @if (hasSubCategories)
+                {
+                    <div class="mobile-category-items">
+                        @foreach (var subCategory in Model[mainCategory.Id])
+                        {
+                            <a asp-action="Index" asp-controller="Business" asp-route-category="@subCategory.Name" class="mobile-category-item">
+                                <span>@subCategory.Name</span>
+                            </a>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    }
+}

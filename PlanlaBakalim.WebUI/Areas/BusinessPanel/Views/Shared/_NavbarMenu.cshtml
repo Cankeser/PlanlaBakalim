@@ -1,0 +1,81 @@
+﻿<nav class="bottom-nav">
+    <a asp-area="BusinessPanel" asp-controller="Home" asp-action="Index" class="nav-item active">
+        <i class="bi bi-house-fill"></i>
+        <span>Ana Sayfa</span>
+    </a>
+    <a asp-area="BusinessPanel" asp-controller="Appointment" asp-action="Index" class="nav-item">
+        <i class="bi bi-calendar-check"></i>
+        <span>Randevular</span>
+    </a>
+    <a asp-area="BusinessPanel" asp-controller="Statistic" asp-action="Index" class="nav-item">
+        <i class="bi bi-graph-up"></i>
+        <span>Finans</span>
+    </a>
+    <a asp-area="BusinessPanel" asp-controller="Employee" asp-action="Index" class="nav-item">
+        <i class="bi bi-people-fill"></i>
+        <span>Çalışanlar</span>
+    </a>
+    <div class="nav-item" onclick="showMoreMenu()">
+        <i class="bi bi-list"></i>
+        <span>Menü</span>
+    </div>
+</nav>
+
+<div class="action-sheet" id="moreMenu">
+    <div class="action-sheet-header">
+        <h3>Menü</h3>
+        <button class="close-action-sheet" onclick="hideMoreMenu()">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </div>
+
+    <div class="action-sheet-content">
+        <div class="action-grid">
+            <a asp-area="BusinessPanel" asp-controller="Services" asp-action="Index" class="action-item">
+                <div class="action-icon">
+                    <i class="bi bi-tools"></i>
+                </div>
+                <span>Hizmetler</span>
+            </a>
+
+            <a asp-area="BusinessPanel" asp-controller="Subscription" asp-action="Index"  class="action-item">
+                <div class="action-icon">
+                    <i class="bi bi-credit-card"></i>
+                </div>
+                <span>Abonelik</span>
+            </a>
+
+            <a asp-area="BusinessPanel" asp-controller="WorkingHours" asp-action="Index" class="action-item">
+                <div class="action-icon">
+                    <i class="bi bi-clock"></i>
+                </div>
+                <span>Çalışma Saatleri</span>
+            </a>
+
+            <a asp-area="BusinessPanel" asp-controller="Gallery" asp-action="Index" class="action-item">
+                <div class="action-icon">
+                    <i class="bi bi-images"></i>
+                </div>
+                <span>Galeri</span>
+            </a>
+
+            <a asp-area="BusinessPanel" asp-controller="Settings" asp-action="Index"  class="action-item">
+                <div class="action-icon">
+                    <i class="bi bi-gear"></i>
+                </div>
+                <span>Ayarlar</span>
+            </a>
+
+            <a class="action-item"  asp-area="BusinessPanel" asp-controller="Account" asp-action="LogOut">
+                <div class="action-icon logout">
+                    <i class="bi bi-box-arrow-right"></i>
+                </div>
+                <span>Çıkış Yap</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Overlay -->
+<div class="overlay" id="overlay" onclick="hideMoreMenu()"></div>
+

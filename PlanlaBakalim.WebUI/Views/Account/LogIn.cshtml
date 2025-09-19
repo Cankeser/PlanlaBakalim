@@ -1,0 +1,103 @@
+﻿@model LoginVM
+<div class="container">
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-icon">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <h1>Hoş Geldiniz</h1>
+                <p>Hesabınıza giriş yapın ve randevularınızı yönetin</p>
+            </div>
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="message-badge success">
+                    @TempData["SuccessMessage"]
+                </div>
+            }
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="message-badge error">
+                    @TempData["ErrorMessage"]
+                </div>
+            }
+            <form class="login-form" asp-controller="Account" asp-action="Login">
+                @Html.AntiForgeryToken()
+                <div class="form-group">
+                    <label asp-for="Email" class="form-label"></label>
+                    <input asp-for="Email" class="form-input">
+                    <span asp-validation-for="Email" class="error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Password" class="form-label"></label>
+                    <div class="password-input-group">
+                        <input asp-for="Password" class="form-input">
+                        <button type="button" class="password-toggle" id="passwordToggle">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Password" class="error"></span>
+                </div>
+
+                <div class="form-options">
+                    <label class="checkbox-container">
+                        <input type="checkbox" asp-for="RememberMe">
+                        @Html.DisplayNameFor(m => m.RememberMe)
+                    </label>
+
+                    <a asp-controller="Account" asp-action="ForgotPassword" class="forgot-password">Şifremi unuttum</a>
+                </div>
+                <input type="hidden" asp-for="ReturnUrl" value="@Context.Request.Query["ReturnUrl"]" />
+                <button type="submit" class="btn btn-primary login-btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Giriş Yap
+                </button>
+            </form>
+
+            <div class="login-divider">
+                <span>veya</span>
+            </div>
+
+            <div class="social-login">
+                <button class="btn btn-social btn-google">
+                    <i class="fab fa-google"></i>
+                    Google ile Giriş
+                </button>
+                <button class="btn btn-social btn-facebook">
+                    <i class="fab fa-facebook-f"></i>
+                    Facebook ile Giriş
+                </button>
+            </div>
+
+            <div class="login-footer">
+                <p>Hesabınız yok mu? <a class="register-link" asp-controller="Account" asp-action="Signup">Kayıt Ol</a></p>
+            </div>
+        </div>
+
+        <div class="login-illustration">
+            <div class="illustration-content">
+                <div class="illustration-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <h3>Randevularınızı Kolayca Yönetin</h3>
+                <p>Planla Bakalım ile randevularınızı tek yerden takip edin, iptal edin veya yeniden planlayın.</p>
+                <div class="login-features-list">
+                    <div class="login-feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Hızlı randevu alma</span>
+                    </div>
+                    <div class="login-feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Randevu hatırlatmaları</span>
+                    </div>
+                    <div class="login-feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Geçmiş randevular</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

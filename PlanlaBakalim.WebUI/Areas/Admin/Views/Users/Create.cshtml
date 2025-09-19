@@ -1,0 +1,169 @@
+@model PlanlaBakalim.Core.Entities.User
+@{
+    ViewData["Title"] = "Yeni Kullanıcı";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="page-title">Yeni Kullanıcı</h1>
+                        <p class="page-subtitle">Sisteme yeni kullanıcı ekleyin</p>
+                    </div>
+                    <div>
+                        <a href="@Url.Action("Index", "Users", new { area = "Admin" })" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Geri Dön
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="fas fa-user-plus me-2"></i>Kullanıcı Bilgileri
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            @TempData["Error"]
+                        </div>
+                    }
+
+                    <form asp-action="Create" method="post">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="FullName" class="form-label">Ad Soyad *</label>
+                                    <input asp-for="FullName" class="form-control" required>
+                                    <span asp-validation-for="FullName" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Email" class="form-label">E-posta *</label>
+                                    <input asp-for="Email" type="email" class="form-control" required>
+                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Phone" class="form-label">Telefon *</label>
+                                    <input asp-for="Phone" class="form-control" required>
+                                    <span asp-validation-for="Phone" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Role" class="form-label">Rol *</label>
+                                    <select asp-for="Role" class="form-select" required>
+                                        <option value="">Rol Seçin</option>
+                                        <option value="@PlanlaBakalim.Core.Enums.UserRole.Admin">Admin</option>
+                                        <option value="@PlanlaBakalim.Core.Enums.UserRole.Calisan">Çalışan</option>
+                                        <option value="@PlanlaBakalim.Core.Enums.UserRole.IsletmeSahibi">İşletme Sahibi</option>
+                                        <option value="@PlanlaBakalim.Core.Enums.UserRole.Musteri">Müşteri</option>
+                                    </select>
+                                    <span asp-validation-for="Role" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="PasswordHash" class="form-label">Şifre *</label>
+                                    <input asp-for="PasswordHash" type="password" class="form-control" required>
+                                    <span asp-validation-for="PasswordHash" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Şifre Tekrar *</label>
+                                    <input type="password" class="form-control" id="ConfirmPassword" required>
+                                    <span id="passwordMatch" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ProfileUrl" class="form-label">Profil Resmi URL</label>
+                            <input asp-for="ProfileUrl" type="url" class="form-control">
+                            <span asp-validation-for="ProfileUrl" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input asp-for="IsActive" class="form-check-input" type="checkbox" checked>
+                            <label asp-for="IsActive" class="form-check-label">
+                                Kullanıcı aktif
+                            </label>
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Kullanıcı Oluştur
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="fas fa-info-circle me-2"></i>Bilgi
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">
+                        <strong>Rol Seçenekleri:</strong>
+                    </p>
+                    <ul class="list-unstyled">
+                        <li><span class="badge bg-danger me-2">Admin</span> Tam yetki</li>
+                        <li><span class="badge bg-warning me-2">Çalışan</span> İşletme çalışanı</li>
+                        <li><span class="badge bg-info me-2">İşletme Sahibi</span> İşletme yöneticisi</li>
+                        <li><span class="badge bg-success me-2">Müşteri</span> Randevu alan kullanıcı</li>
+                    </ul>
+                    
+                    <hr>
+                    
+                    <p class="text-muted">
+                        <i class="fas fa-shield-alt me-2"></i>
+                        Şifre güvenliği için en az 8 karakter kullanın.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('ConfirmPassword').addEventListener('input', function() {
+            const password = document.getElementById('PasswordHash').value;
+            const confirmPassword = this.value;
+            const matchSpan = document.getElementById('passwordMatch');
+            
+            if (confirmPassword && password !== confirmPassword) {
+                matchSpan.textContent = 'Şifreler eşleşmiyor';
+                matchSpan.className = 'text-danger';
+            } else {
+                matchSpan.textContent = '';
+            }
+        });
+    </script>
+}
+

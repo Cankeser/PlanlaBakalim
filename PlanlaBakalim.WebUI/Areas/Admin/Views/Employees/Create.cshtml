@@ -1,0 +1,124 @@
+@model PlanlaBakalim.Core.Entities.Employee
+@{
+    ViewData["Title"] = "Yeni Çalışan";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-user-plus"></i> Yeni Çalışan</h2>
+    <a href="@Url.Action("Index", "Employees", new { area = "Admin" })" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Geri Dön
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-user"></i> Çalışan Bilgileri
+                </h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="UserId" class="form-label">Kullanıcı</label>
+                                <select asp-for="UserId" class="form-select" asp-items="@(new SelectList(ViewBag.Users as IEnumerable<dynamic>, "Id", "FullName"))">
+                                    <option value="">Kullanıcı Seçin</option>
+                                </select>
+                                <span asp-validation-for="UserId" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="BusinessId" class="form-label">İşletme</label>
+                                <select asp-for="BusinessId" class="form-select" asp-items="@(new SelectList(ViewBag.Businesses as IEnumerable<dynamic>, "Id", "Name"))">
+                                    <option value="">İşletme Seçin</option>
+                                </select>
+                                <span asp-validation-for="BusinessId" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="Position" class="form-label">Pozisyon</label>
+                                <input asp-for="Position" class="form-control" placeholder="Örn: Garson, Şef, Müdür" />
+                                <span asp-validation-for="Position" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="StartDate" class="form-label">İşe Başlama Tarihi</label>
+                                <input asp-for="StartDate" type="date" class="form-control" />
+                                <span asp-validation-for="StartDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="EndDate" class="form-label">İşten Ayrılma Tarihi</label>
+                                <input asp-for="EndDate" type="date" class="form-control" />
+                                <span asp-validation-for="EndDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <div class="form-check mt-4">
+                                    <input asp-for="IsActive" class="form-check-input" type="checkbox" checked />
+                                    <label asp-for="IsActive" class="form-check-label">
+                                        Aktif
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="@Url.Action("Index", "Employees", new { area = "Admin" })" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> İptal
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-info-circle"></i> Bilgi
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">
+                    <i class="fas fa-lightbulb text-warning"></i>
+                    Çalışan eklemek için önce kullanıcı ve işletme seçmeniz gerekmektedir.
+                </p>
+                <hr>
+                <h6 class="text-muted">Gerekli Alanlar:</h6>
+                <ul class="text-muted small">
+                    <li>Kullanıcı</li>
+                    <li>İşletme</li>
+                    <li>Pozisyon</li>
+                    <li>İşe Başlama Tarihi</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+

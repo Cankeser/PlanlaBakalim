@@ -1,0 +1,161 @@
+﻿@{
+    ViewData["Title"] = "İşletmeler";
+}
+<!-- Hero Section -->
+<section class="search-hero hero">
+    <div class="container">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Size Uygun İşletmeyi Bulun!</h1>
+                <p>İstediğiniz hizmet, kategori veya şehri girin ve yakınınızdaki en iyi işletmeleri keşfedin.</p>
+            </div>
+            <form class="search-bar" autocomplete="off">
+                <span><i class="fas fa-search"></i></span>
+                <input type="text" placeholder="Örn: Berber, Güzellik Salonu, İstanbul...">
+                <button type="submit"><i class="fas fa-search"></i></button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Businesses Section -->
+<section class="featured-businesses">
+    <div class="container businesses-container">
+        <div class="businesses-layout">
+            <main class="businesses-main">
+                <div class="businesses-section-header">
+                    <h2>İşletmeler</h2>
+                    <div class="filter-controls">
+                        <button id="openFilterModal" class="btn-filter-businesses">
+                            <i class="fas fa-filter"></i>
+                            <span>Filtrele</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filter Modal -->
+                <div id="filterModalBg" class="businesses-filter-modal-bg">
+                    <div id="filterModal" class="businesses-filter-modal">
+                        <button id="closeFilterModal" class="close-btn"><i class="fas fa-times"></i></button>
+                        <h2>Filtre</h2>
+                        <div class="businesses-filter-section">
+                            <label class="businesses-filter-label"><i class="fas fa-tags"></i> Kategori</label>
+                            <select class="businesses-filter-select">
+                                <option value="">Tüm Kategoriler</option>
+                                <option value="barber">Berber</option>
+                                <option value="beauty-salon">Güzellik Salonu</option>
+                                <option value="hair-salon">Kuaför</option>
+                                <option value="epilation">Epilasyon</option>
+                                <option value="sauna">Sauna</option>
+                                <option value="spa">Spa & Wellness</option>
+                            </select>
+                        </div>
+                        <div class="businesses-filter-section">
+                            <label class="businesses-filter-label"><i class="fas fa-map-marker-alt"></i> Şehir</label>
+                            <select class="businesses-filter-select">
+                                <option value="">Tüm Şehirler</option>
+                                <option value="istanbul">İstanbul</option>
+                                <option value="ankara">Ankara</option>
+                                <option value="izmir">İzmir</option>
+                                <option value="bursa">Bursa</option>
+                                <option value="antalya">Antalya</option>
+                            </select>
+                        </div>
+                        <div class="businesses-filter-section">
+                            <label class="businesses-filter-label"><i class="fas fa-tag"></i> Fiyat Aralığı</label>
+                            <div class="businesses-filter-range">
+                                <input type="number" min="0" max="1000" value="0" class="businesses-filter-input">
+                                <span>-</span>
+                                <input type="number" min="0" max="1000" value="1000" class="businesses-filter-input">
+                            </div>
+                        </div>
+                        <div class="businesses-filter-section">
+                            <label class="businesses-filter-label"><i class="fas fa-star"></i> Minimum Puan</label>
+                            <select class="businesses-filter-select">
+                                <option value="">Tüm Puanlar</option>
+                                <option value="4.5">4.5+ Yıldız</option>
+                                <option value="4.0">4.0+ Yıldız</option>
+                                <option value="3.5">3.5+ Yıldız</option>
+                                <option value="3.0">3.0+ Yıldız</option>
+                            </select>
+                        </div>
+                        <div class="businesses-filter-section">
+                            <label class="businesses-filter-label"><i class="fas fa-sort"></i> Sıralama</label>
+                            <select class="businesses-filter-select">
+                                <option value="rating">En İyi Puan</option>
+                                <option value="distance">En Yakın</option>
+                                <option value="price-low">En Uygun Fiyat</option>
+                                <option value="price-high">En Yüksek Fiyat</option>
+                                <option value="reviews">En Çok Yorum</option>
+                            </select>
+                        </div>
+                        <button class="businesses-filter-apply">Filtreyi Uygula</button>
+                    </div>
+
+                </div>
+
+             @await Component.InvokeAsync("BusinessList")
+
+            </main>
+        </div>
+    </div>
+</section>
+
+<!-- Pagination -->
+<section class="pagination-section">
+    <div class="container">
+        <div class="pagination">
+            <button class="pagination-btn prev" id="prev-page">
+                <i class="fas fa-chevron-left"></i>
+                Önceki
+            </button>
+            <div class="pagination-numbers">
+                <button class="pagination-number active" data-page="1">1</button>
+                <button class="pagination-number" data-page="2">2</button>
+                <button class="pagination-number" data-page="3">3</button>
+                <span class="pagination-dots">...</span>
+                <button class="pagination-number" data-page="8">8</button>
+            </div>
+            <button class="pagination-btn next" id="next-page">
+                Sonraki
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+        <div class="pagination-info">
+            <span>Sayfa 1 / 8</span>
+            <span>Toplam 48 İşletme</span>
+        </div>
+    </div>
+</section>
+@section Scripts {
+    <script>
+        (function () {
+            var modalBg = document.getElementById('filterModalBg');
+            var modal = document.getElementById('filterModal');
+            var openBtn = document.getElementById('openFilterModal');
+            var closeBtn = document.getElementById('closeFilterModal');
+
+            function openModal() {
+                if (!modalBg) return;
+                modalBg.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeModal() {
+                if (!modalBg) return;
+                modalBg.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            if (openBtn) openBtn.onclick = openModal;
+            if (closeBtn) closeBtn.onclick = closeModal;
+
+            if (modalBg) {
+                modalBg.onclick = function (e) {
+                    if (e.target === modalBg) closeModal();
+                };
+            }
+           
+        })();
+    </script>
+}

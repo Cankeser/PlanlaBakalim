@@ -1,0 +1,350 @@
+@model IEnumerable<PlanlaBakalim.Core.Entities.Business>
+@{
+    ViewData["Title"] = "İşletme Yönetimi";
+}
+
+@Html.AntiForgeryToken()
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-store"></i> İşletme Yönetimi</h2>
+    <div>
+        <a href="@Url.Action("Create", "Businesses", new { area = "Admin" })" class="btn btn-admin">
+            <i class="fas fa-plus"></i> Yeni İşletme
+        </a>
+    </div>
+</div>
+
+<!-- İstatistik Kartları -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stat-card primary">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-xs">Toplam İşletme</div>
+                    <div class="h5">@Model.Count()</div>
+                </div>
+                <i class="fas fa-store stat-icon text-primary"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card success">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-xs">Aktif İşletme</div>
+                    <div class="h5">@Model.Count(b => b.IsActive)</div>
+                </div>
+                <i class="fas fa-check-circle stat-icon text-success"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card warning">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-xs">Bu Ay Kayıt</div>
+                    <div class="h5">@Model.Count(b => b.CreatedDate.Month == DateTime.Now.Month)</div>
+                </div>
+                <i class="fas fa-calendar-plus stat-icon text-warning"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card danger">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-xs">Bekleyen Onay</div>
+                    <div class="h5">@Model.Count(b => !b.IsActive)</div>
+                </div>
+                <i class="fas fa-hourglass-half stat-icon text-danger"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- İşletme Listesi -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">
+            <i class="fas fa-list"></i> İşletme Listesi
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-admin">
+                <thead>
+                    <tr>
+                        <th>İşletme</th>
+                        <th>Kategori</th>
+                        <th>Sahibi</th>
+                        <th>İletişim</th>
+                        <th>Adres</th>
+                        <th>Kayıt Tarihi</th>
+                        <th>Durum</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var business in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="@(business.ProfileImageUrl ?? "~/img/business-default.jpg")" 
+                                         class="rounded-circle me-2" width="40" height="40" alt="Business">
+                                    <div>
+                                        <div class="fw-bold">@business.Name</div>
+                                        <small class="text-muted">ID: @business.Id</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-info">@business.Category?.Name</span>
+                            </td>
+                            <td>
+                                <div>
+                                    <div class="fw-bold">@business.Owner?.FullName</div>
+                                    <small class="text-muted">@business.Owner?.Email</small>
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <div><i class="fas fa-envelope"></i> @business.Email</div>
+                                    <div><i class="fas fa-phone"></i> @business.PhoneNumber</div>
+                                </div>
+                            </td>
+                                    <td>
+                                        @if (business.BusinessAddress != null)
+                                        {
+                                            <div>
+                                                <div>@business.BusinessAddress.District?.City?.Name</div>
+                                                <small class="text-muted">@business.BusinessAddress.District?.Name</small>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Adres yok</span>
+                                        }
+                                    </td>
+                            <td>@business.CreatedDate.ToString("dd.MM.yyyy")</td>
+                            <td>
+                                @if (business.IsActive)
+                                {
+                                    <span class="badge bg-success">Aktif</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Pasif</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="@Url.Action("Details", "Businesses", new { area = "Admin", id = business.Id })" 
+                                       class="btn btn-sm btn-outline-primary" title="Detaylar">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="@Url.Action("Edit", "Businesses", new { area = "Admin", id = business.Id })" 
+                                       class="btn btn-sm btn-outline-info" title="Düzenle">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button class="btn btn-sm btn-outline-@(business.IsActive ? "warning" : "success")" 
+                                            onclick="toggleBusinessStatus(@business.Id, @business.IsActive.ToString().ToLower())" 
+                                            title="@(business.IsActive ? "Pasifleştir" : "Aktifleştir")">
+                                        <i class="fas fa-@(business.IsActive ? "ban" : "check")"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" 
+                                            onclick="deleteBusiness(@business.Id)" 
+                                            title="Sil">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleBusinessStatus(businessId, isActive) {
+            const action = isActive ? 'pasifleştir' : 'aktifleştir';
+            const actionText = isActive ? 'Pasifleştir' : 'Aktifleştir';
+            const message = `Bu işletmeyi ${action}mak istediğinizden emin misiniz?`;
+            
+            AdminPanel.showConfirmation({
+                title: 'İşletme Durumu Değiştir',
+                message: message,
+                confirmText: actionText,
+                cancelText: 'İptal',
+                type: isActive ? 'warning' : 'success',
+                onConfirm: () => {
+                    // Get CSRF token
+                    const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+                    
+                    fetch(`@Url.Action("ToggleStatus", "Businesses", new { area = "Admin" })/${businessId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'RequestVerificationToken': token || ''
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            AdminPanel.showAlert(data.message || `İşletme başarıyla ${action}ldı.`, 'success');
+                            setTimeout(() => location.reload(), 1500);
+                        } else {
+                            AdminPanel.showAlert(data.message || 'İşlem sırasında bir hata oluştu.', 'danger');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        AdminPanel.showAlert('İşlem sırasında bir hata oluştu.', 'danger');
+                    });
+                }
+            });
+        }
+
+        function deleteBusiness(businessId) {
+            AdminPanel.showConfirmation({
+                title: 'İşletme Sil',
+                message: 'Bu işletmeyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!',
+                confirmText: 'Sil',
+                cancelText: 'İptal',
+                type: 'danger',
+                onConfirm: () => {
+                    // Get CSRF token
+                    const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+                    
+                    fetch(`@Url.Action("Delete", "Businesses", new { area = "Admin" })/${businessId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'RequestVerificationToken': token || ''
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            AdminPanel.showAlert(data.message || 'İşletme başarıyla silindi.', 'success');
+                            setTimeout(() => location.reload(), 1500);
+                        } else {
+                            AdminPanel.showAlert(data.message || 'İşlem sırasında bir hata oluştu.', 'danger');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        AdminPanel.showAlert('İşlem sırasında bir hata oluştu.', 'danger');
+                    });
+                }
+            });
+        }
+    </script>
+}
+
+<!-- Pagination -->
+@if (ViewBag.TotalPages > 1)
+{
+    <nav aria-label="Sayfa navigasyonu" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <!-- Previous Page -->
+            @if (ViewBag.CurrentPage > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage - 1, pageSize = ViewBag.PageSize })">
+                        <i class="fas fa-chevron-left"></i> Önceki
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">
+                        <i class="fas fa-chevron-left"></i> Önceki
+                    </span>
+                </li>
+            }
+
+            <!-- Page Numbers -->
+            @{
+                int startPage = Math.Max(1, ViewBag.CurrentPage - 2);
+                int endPage = Math.Min(ViewBag.TotalPages, ViewBag.CurrentPage + 2);
+            }
+
+            @if (startPage > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { page = 1, pageSize = ViewBag.PageSize })">1</a>
+                </li>
+                @if (startPage > 2)
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                }
+            }
+
+            @for (int i = startPage; i <= endPage; i++)
+            {
+                <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { page = i, pageSize = ViewBag.PageSize })">@i</a>
+                </li>
+            }
+
+            @if (endPage < ViewBag.TotalPages)
+            {
+                @if (endPage < ViewBag.TotalPages - 1)
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                }
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.TotalPages, pageSize = ViewBag.PageSize })">@ViewBag.TotalPages</a>
+                </li>
+            }
+
+            <!-- Next Page -->
+            @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage + 1, pageSize = ViewBag.PageSize })">
+                        Sonraki <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">
+                        Sonraki <i class="fas fa-chevron-right"></i>
+                    </span>
+                </li>
+            }
+        </ul>
+        
+        <!-- Page Info -->
+        <div class="text-center text-muted">
+            <small>
+                Sayfa @ViewBag.CurrentPage / @ViewBag.TotalPages 
+                (@ViewBag.TotalCount toplam kayıt)
+            </small>
+        </div>
+    </nav>
+}
+

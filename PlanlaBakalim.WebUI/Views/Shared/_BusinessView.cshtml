@@ -1,0 +1,35 @@
+﻿@model BusinessVM
+<div class="ci-business-card">
+    <div class="business-image">
+        <img src="@Model.ProfileImageUrl" alt="@Model.Name">
+        <div class="business-status open">Açık</div>
+        <button class="favorite-btn" data-business-id="1">
+            <i class="far fa-heart"></i>
+        </button>
+    </div>
+    <div class="business-content">
+        <div class="business-header">
+            <h3>@Model.Name</h3>
+            @if (Model.ReviewCount > 0)
+            {
+                <div class="business-rating">
+                    <div class="stars">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <span>
+                        @($"{Model.AverageRating:0.0} ({Model.ReviewCount})")
+                    </span>
+                </div>
+            }
+        </div>
+        <div class="business-category">@Model.CategoryName</div>
+        <div class="business-info">
+            <span><i class="fas fa-map-marker-alt"></i> İstanbul, Türkiye</span>
+            <span><i class="fas fa-clock"></i> 08:00 - 20:00</span>
+        </div>
+        <div class="business-price">
+            <span>Başlangıç: ₺150</span>
+        </div>
+        <a asp-controller="Business" asp-action="BusinessDetail" asp-route-Id="@Model.Id" asp-route-name="@UrlConverter.ConvertToUrl(Model.Name)" class="btn-book">Randevu Al</a>
+    </div>
+</div>

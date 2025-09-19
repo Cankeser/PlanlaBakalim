@@ -1,0 +1,832 @@
+/* ===== GALLERY V2 CSS - MODERN GALERİ TASARIMI ===== */
+
+/* Add Photo Button */
+.add-photo-btn {
+    width: 44px;
+    height: 44px;
+    background: var(--primary);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.add-photo-btn:hover {
+    background: var(--primary-light);
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* Gallery Grid */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: var(--space-4);
+    padding: var(--space-4) 0;
+}
+
+/* Photo Card */
+.photo-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid var(--border);
+}
+
+.photo-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    border-color: var(--primary-light);
+}
+
+/* Photo Image */
+.photo-image {
+    position: relative;
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+}
+
+.photo-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.photo-card:hover .photo-image img {
+    transform: scale(1.05);
+}
+
+/* Photo Overlay */
+.photo-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.6) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    padding: var(--space-3);
+}
+
+.photo-card:hover .photo-overlay {
+    opacity: 1;
+}
+
+/* Photo Actions */
+.photo-actions {
+    display: flex;
+    gap: var(--space-2);
+}
+
+.action-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    backdrop-filter: blur(10px);
+}
+
+.action-btn.edit {
+    background: rgba(6, 182, 212, 0.9);
+    color: white;
+}
+
+.action-btn.edit:hover {
+    background: var(--info-light);
+    transform: scale(1.05);
+}
+
+.action-btn.delete {
+    background: rgba(239, 68, 68, 0.9);
+    color: white;
+}
+
+.action-btn.delete:hover {
+    background: var(--danger-light);
+    transform: scale(1.05);
+}
+
+/* Photo Info */
+.photo-info {
+    padding: var(--space-4);
+}
+
+.photo-info h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 var(--space-2) 0;
+    line-height: 1.3;
+}
+
+.photo-info p {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin: 0 0 var(--space-3) 0;
+    line-height: 1.4;
+}
+
+/* Photo Options */
+.photo-options {
+    display: flex;
+    align-items: center;
+}
+
+.option-checkbox {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    user-select: none;
+    pointer-events: auto;
+    z-index: 5;
+    position: relative;
+}
+
+.option-checkbox input[type="checkbox"] {
+    display: none;
+    pointer-events: auto;
+}
+
+.checkmark {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-secondary);
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.option-checkbox input[type="checkbox"]:checked + .checkmark {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+.option-checkbox input[type="checkbox"]:checked + .checkmark::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+.option-checkbox:hover .checkmark {
+    border-color: var(--primary);
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    backdrop-filter: blur(8px);
+}
+
+.modal.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: var(--bg-card);
+    border-radius: var(--radius-2xl);
+    border: 1px solid var(--border);
+    max-width: 90%;
+    max-height: 90%;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease;
+}
+
+/* Add Photo Modal - Wider */
+#addModal .modal-content {
+    width: 90%;
+    max-width: 700px;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-5);
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.close-btn {
+    width: 36px;
+    height: 36px;
+    background: var(--bg-secondary);
+    border: none;
+    border-radius: 50%;
+    color: var(--text-secondary);
+    font-size: 1.125rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-btn:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.modal-body {
+    padding: var(--space-5);
+}
+
+.modal-footer {
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    border-top: 1px solid var(--border);
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.modal-options {
+    display: flex;
+    justify-content: flex-start;
+    margin-right: auto;
+}
+
+.modal-actions {
+    display: flex;
+    gap: var(--space-3);
+    justify-content: flex-end;
+}
+
+/* Upload Area */
+.upload-area {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-8);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: var(--space-4);
+    position: relative;
+}
+
+.upload-area:hover {
+    border-color: var(--primary);
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.upload-content i {
+    font-size: 3rem;
+    color: var(--primary);
+    margin-bottom: var(--space-3);
+    display: block;
+}
+
+.upload-content h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 var(--space-2) 0;
+}
+
+.upload-content p {
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* Preview Content */
+.preview-content {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.preview-content img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: var(--radius-lg);
+}
+
+/* Remove Preview Button - YENİ TASARIM */
+.remove-preview-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    background: rgba(0, 0, 0, 0.9);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    z-index: 10;
+}
+
+.remove-preview-btn:hover {
+    background: rgba(0, 0, 0, 1);
+    border-color: white;
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Form Groups */
+.form-group {
+    margin-bottom: var(--space-4);
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: var(--space-4);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* Buttons */
+.btn-cancel,
+.btn-save {
+    padding: var(--space-2) var(--space-4);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 0.8rem;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 80px;
+}
+
+.btn-cancel {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+}
+
+.btn-cancel:hover {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.btn-save {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-save:hover {
+    background: var(--primary-light);
+    transform: translateY(-1px);
+}
+
+/* Edit Modal */
+.edit-modal .modal-content {
+    width: 90%;
+    max-width: 600px;
+}
+
+.edit-photo-preview {
+    text-align: center;
+    margin-bottom: var(--space-4);
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.edit-photo-preview img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: var(--radius-lg);
+}
+
+/* Delete Modal */
+.delete-modal .modal-content {
+    width: 90%;
+    max-width: 500px;
+}
+
+.delete-photo-preview {
+    text-align: center;
+    margin-bottom: var(--space-4);
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.delete-photo-preview img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: var(--radius-lg);
+}
+
+.delete-confirmation {
+    text-align: center;
+}
+
+.delete-confirmation h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 var(--space-3) 0;
+}
+
+.delete-confirmation p {
+    margin: 0 0 var(--space-2) 0;
+    color: var(--text-secondary);
+}
+
+.delete-confirmation p strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.delete-warning {
+    color: var(--danger) !important;
+    font-weight: 500;
+    margin-top: var(--space-3) !important;
+}
+
+/* Modal Checkbox */
+.modal-checkbox {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    cursor: pointer;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    user-select: none;
+    pointer-events: auto;
+    z-index: 5;
+}
+
+.modal-checkbox input[type="checkbox"] {
+    display: none;
+}
+
+.modal-checkmark {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-secondary);
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.modal-checkbox input[type="checkbox"]:checked + .modal-checkmark {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+.modal-checkbox input[type="checkbox"]:checked + .modal-checkmark::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.modal-checkbox:hover .modal-checkmark {
+    border-color: var(--primary);
+}
+
+.btn-edit,
+.btn-delete,
+.btn-close {
+    padding: var(--space-2) var(--space-3);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 0.8rem;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 70px;
+}
+
+.btn-edit {
+    background: var(--info);
+    color: white;
+}
+
+.btn-edit:hover {
+    background: var(--info-light);
+    transform: translateY(-1px);
+}
+
+.btn-delete {
+    background: var(--danger);
+    color: white;
+}
+
+.btn-delete:hover {
+    background: var(--danger-light);
+    transform: translateY(-1px);
+}
+
+.btn-close {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+}
+
+.btn-close:hover {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+/* Success Message */
+.success-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--success);
+    color: white;
+    padding: var(--space-4);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 2000;
+    animation: slideInRight 0.3s ease;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.success-message i {
+    font-size: 1.25rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .gallery-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: var(--space-3);
+        padding: var(--space-3) 0;
+    }
+    
+    .modal-content {
+        max-width: 95%;
+        margin: var(--space-2);
+    }
+    
+    #addModal .modal-content {
+        width: 95%;
+        max-width: none;
+    }
+    
+    .photo-image {
+        height: 150px;
+    }
+    
+    .edit-photo-preview {
+        height: 180px;
+    }
+    
+    .delete-photo-preview {
+        height: 120px;
+    }
+    
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        padding: var(--space-4);
+    }
+    
+    .modal-footer {
+        flex-direction: row;
+        gap: var(--space-2);
+    }
+    
+    .upload-area {
+        padding: var(--space-6);
+    }
+    
+    .upload-area i {
+        font-size: 2.5rem;
+    }
+    
+    .preview-content {
+        height: 250px;
+    }
+    
+    /* Tablet Remove Button */
+    .remove-preview-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 0.875rem;
+        top: 6px;
+        right: 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .gallery-grid {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: var(--space-2);
+    }
+    
+    .photo-info {
+        padding: var(--space-3);
+    }
+    
+    .photo-info h4 {
+        font-size: 0.9rem;
+    }
+    
+    .photo-info p {
+        font-size: 0.8rem;
+    }
+    
+    .action-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 0.8rem;
+    }
+    
+    .photo-image {
+        height: 120px;
+    }
+    
+    .preview-content {
+        height: 200px;
+    }
+    
+    .edit-photo-preview {
+        height: 150px;
+    }
+    
+    .delete-photo-preview {
+        height: 100px;
+    }
+    
+    .modal-footer {
+        flex-direction: row;
+        gap: var(--space-2);
+    }
+    
+    /* Mobile Remove Button */
+    .remove-preview-btn {
+        width: 24px;
+        height: 24px;
+        font-size: 0.75rem;
+        top: 4px;
+        right: 4px;
+    }
+}
+/* -----------------------------
+   Galeri Boş Durum Stili
+------------------------------ */
+.no-photos {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 20px;
+    color: #6c757d; /* soft gri renk */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+    .no-photos i {
+        font-size: 60px;
+        color: #adb5bd; /* ikon rengi */
+        margin-bottom: 20px;
+        transition: transform 0.3s ease, color 0.3s ease;
+    }
+
+        .no-photos i:hover {
+            transform: scale(1.2);
+            color: #495057; /* hover rengi */
+        }
+
+    .no-photos h3 {
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .no-photos p {
+        font-size: 16px;
+        max-width: 400px;
+        line-height: 1.5;
+        color: #6c757d;
+    }
+
+/* Responsive küçük ekranlar için */
+@media (max-width: 576px) {
+    .no-photos i {
+        font-size: 50px;
+    }
+
+    .no-photos h3 {
+        font-size: 20px;
+    }
+
+    .no-photos p {
+        font-size: 14px;
+    }
+}

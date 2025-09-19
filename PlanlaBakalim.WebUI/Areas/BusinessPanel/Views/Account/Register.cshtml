@@ -1,0 +1,335 @@
+﻿@model RegisterBusinessVM
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İşletme Paneli - Kayıt</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/BusinessPanel/css/base.css">
+    <link rel="stylesheet" href="~/BusinessPanel/css/register.css">
+</head>
+<body>
+    <div class="register-container">
+        <!-- Background Pattern -->
+        <div class="background-pattern">
+            <div class="pattern-circle pattern-circle-1"></div>
+            <div class="pattern-circle pattern-circle-2"></div>
+            <div class="pattern-circle pattern-circle-3"></div>
+        </div>
+
+        <!-- Register Card -->
+        <div class="register-card">
+            <!-- Header Section -->
+            <div class="header-section">
+                <a asp-area="BusinessPanel" asp-controller="Account" asp-action="LogIn" class="back-link">
+                    <i class="bi bi-arrow-left"></i>
+                    Giriş Sayfasına Dön
+                </a>
+
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <i class="bi bi-building-add"></i>
+                    </div>
+                    <h1 class="logo-title">İşletme Kaydı</h1>
+                    <p class="logo-subtitle">Yeni işletmenizi sisteme ekleyin</p>
+                </div>
+            </div>
+
+            @if (TempData["MessageSuccess"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle me-2"></i>@TempData["MessageSuccess"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData["MessageError"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-circle me-2"></i>@TempData["MessageError"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <!-- Registration Form -->
+            <form asp-area ="BusinessPanel" asp-controller="Account" asp-action="Register" method="post" class="register-form">
+                @Html.AntiForgeryToken()
+
+                <!-- İşletme Sahibi Bilgileri -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="bi bi-shop"></i>
+                        İşletme Sahibi Bilgileri
+                    </h3>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label asp-for="OwnerName" class="form-label"></label>
+                            <input asp-for="OwnerName" class="form-input" />
+                            <span asp-validation-for="OwnerName" class="validation-message"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="OwnerEmail" class="form-label"></label>
+                            <input asp-for="OwnerEmail" class="form-input" />
+                            <span asp-validation-for="OwnerEmail" class="validation-message"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="OwnerPhone" class="form-label"></label>
+                            <input asp-for="OwnerPhone" class="form-input" />
+                            <span asp-validation-for="OwnerPhone" class="validation-message"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Temel İşletme Bilgileri -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="bi bi-shop"></i>
+                        Temel İşletme Bilgileri
+                    </h3>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label asp-for="BusinessName" class="form-label"></label>
+                            <input asp-for="BusinessName" class="form-input" />
+                            <span asp-validation-for="BusinessName" class="validation-message"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="CategoryId" class="form-label"></label>
+                            <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-select">
+                                <option value="0">Seçiniz</option>
+                            </select>
+                            <span asp-validation-for="CategoryId" class="validation-message"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label asp-for="BusinessEmail" class="form-label"></label>
+                            <input asp-for="BusinessEmail" class="form-input" />
+                            <span asp-validation-for="BusinessEmail" class="validation-message"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="BusinessPhone" class="form-label"></label>
+                            <input asp-for="BusinessPhone" class="form-input" />
+                            <span asp-validation-for="BusinessPhone" class="validation-message"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="BusinessWebsite" class="form-label"></label>
+                        <input asp-for="BusinessWebsite" class="form-input" />
+                        <span asp-validation-for="BusinessWebsite" class="validation-message"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="BusinessAddress" class="form-label"></label>
+                        <textarea asp-for="BusinessAddress" class="form-textarea"></textarea>
+                        <span asp-validation-for="BusinessAddress" class="validation-message"></span>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label asp-for="BusinessCity" class="form-label"></label>
+                            <select asp-for="BusinessCity" class="form-select" id="businessCity">
+                                <option value="">Şehir seçin</option>
+                            </select>
+                            <span asp-validation-for="BusinessCity" class="validation-message"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="BusinessDistrict" class="form-label"></label>
+                            <select asp-for="BusinessDistrict" class="form-select" id="businessDistrict">
+                                <option value="">Önce şehir seçin</option>
+                            </select>
+                            <span asp-validation-for="BusinessDistrict" class="validation-message"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="BusinessDescription" class="form-label"></label>
+                        <textarea asp-for="BusinessDescription" class="form-textarea"></textarea>
+                        <span asp-validation-for="BusinessDescription" class="validation-message"></span>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <h3 class="section-title"><i class="bi bi-clock"></i> Çalışma Saatleri</h3>
+                    <div class="working-hours-grid">
+                        @for (int i = 0; i < 7; i++)
+                        {
+                            var day = (WeekDay)i;
+                            var workingHour = new BusinessWorkingHour { Day = day, OpenTime = new TimeSpan(9, 0, 0), CloseTime = new TimeSpan(22, 0, 0), IsOpen = true };
+                           
+                            <div class="day-row">
+                                <div class="day-name">@workingHour.Day</div>
+                                <div class="day-schedule">
+                                    <input type="hidden" asp-for="WorkingHours[@i].Day" value="@((int)day)" />
+
+                                    <input type="time" asp-for="WorkingHours[@i].OpenTime" value="@workingHour.OpenTime" class="time-input" />
+                                    <span class="time-separator">-</span>
+                                    <input type="time" asp-for="WorkingHours[@i].CloseTime" value="@workingHour.CloseTime" class="time-input" />
+                                    <label class="day-toggle">
+                                        <input type="checkbox" asp-for="WorkingHours[@i].IsOpen" checked="@workingHour.IsOpen" />
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        }
+
+                    </div>
+                </div>
+
+                <!-- Randevu Ayarları -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="bi bi-calendar-check"></i>
+                        Randevu Ayarları
+                    </h3>
+                    <div class="form-group">
+                        <label asp-for="AppointmentSlotDuration" class="form-label"></label>
+                        <select asp-for="AppointmentSlotDuration" class="form-select">
+                            <option value="15">15 dakika</option>
+                            <option value="20">20 dakika</option>
+                            <option value="30">30 dakika</option>
+                            <option value="45">45 dakika</option>
+                            <option value="60">1 saat</option>
+                            <option value="90">1.5 saat</option>
+                            <option value="120">2 saat</option>
+                        </select>
+                        <span asp-validation-for="AppointmentSlotDuration" class="validation-message"></span>
+                    </div>
+                </div>
+
+                <!-- Hesap Bilgileri -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="bi bi-shield-lock"></i>
+                        Hesap Bilgileri
+                    </h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label asp-for="Password" class="form-label"> </label>
+                            <div class="password-input-group">
+                                <input asp-for="Password" class="form-input">
+                                <button type="button" class="password-toggle" id="passwordToggle">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="ConfirmPassword" class="form-label"></label>
+                            <div class="password-input-group">
+                                <input asp-for="ConfirmPassword" class="form-input">
+                                <button type="button" class="password-toggle" id="confirmPasswordToggle">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Submit -->
+                <button type="submit" class="register-btn" id="registerBtn">
+                    <span class="btn-text">İşletme Kaydını Tamamla</span>
+                </button>
+            </form>
+
+            <!-- Footer -->
+            <div class="register-footer">
+                <p class="footer-text">
+                    Zaten hesabınız var mı?
+                    <a asp-controller="Auth" asp-action="Login" class="login-link">Giriş yapın</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Validation Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+    <!-- Ajax City/District -->
+    <script>
+        $(document).ready(function () {
+            // Şehirleri doldur
+            $.getJSON('/BusinessPanel/Location/GetCities', function (data) {
+                var citySelect = $('#businessCity');
+                $.each(data, function (i, city) {
+                    citySelect.append($('<option>', {
+                        value: city.id,
+                        text: city.name
+                    }));
+                });
+            });
+
+            // İlçe doldurma
+            $('#businessCity').change(function () {
+                var cityId = $(this).val();
+                var districtSelect = $('#businessDistrict');
+                districtSelect.empty().append('<option value="">İlçe seçiniz</option>');
+
+                if (cityId) {
+                    $.getJSON('/BusinessPanel/Location/GetDistricts?cityId=' + cityId, function (data) {
+                        $.each(data, function (i, district) {
+                            districtSelect.append($('<option>', {
+                                value: district.id,
+                                text: district.name
+                            }));
+                        });
+                    });
+                }
+            });
+
+                 // Şifre göster/gizle (bozmadan çalışır)
+        function setupPasswordToggle(toggleId, inputId) {
+            const toggle = document.getElementById(toggleId);
+            const input = document.getElementById(inputId);
+
+            toggle.addEventListener("click", function () {
+                if (input.type === "password") {
+                    input.type = "text";
+                    toggle.innerHTML = '<i class="bi bi-eye-slash"></i>';
+                } else {
+                    input.type = "password";
+                    toggle.innerHTML = '<i class="bi bi-eye"></i>';
+                }
+            });
+        }
+             const dayToggles = document.querySelectorAll('.day-toggle input[type="checkbox"]');
+
+        dayToggles.forEach(checkbox => {
+            const dayRow = checkbox.closest('.day-row');
+            const timeInputs = dayRow.querySelectorAll('.time-input');
+
+            // Başlangıçta inputları checkbox durumuna göre ayarla
+            timeInputs.forEach(input => {
+                input.disabled = !checkbox.checked;
+                input.style.opacity = checkbox.checked ? '1' : '0.5';
+            });
+
+            // Checkbox değiştiğinde inputları güncelle
+            checkbox.addEventListener('change', function () {
+                timeInputs.forEach(input => {
+                    input.disabled = !this.checked;
+                    input.style.opacity = this.checked ? '1' : '0.5';
+                });
+            });
+        });
+        setupPasswordToggle("passwordToggle", "Password");
+        setupPasswordToggle("confirmPasswordToggle", "ConfirmPassword");
+        });
+    </script>
+</body>
+</html>

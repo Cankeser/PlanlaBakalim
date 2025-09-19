@@ -1,0 +1,411 @@
+/* ===== SIMPLE SETTINGS STYLES ===== */
+
+/* Profile Section */
+.profile-section {
+    margin-bottom: var(--space-6);
+}
+
+.profile-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+    box-shadow: var(--shadow-sm);
+}
+
+.profile-avatar {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    border: 3px solid var(--primary);
+    flex-shrink: 0;
+}
+
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-edit {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 32px;
+    height: 32px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: var(--font-size-sm);
+}
+
+.avatar-edit:hover {
+    background: var(--primary-dark);
+    transform: scale(1.1);
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-info h2 {
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-2);
+}
+
+.profile-info p {
+    font-size: var(--font-size-base);
+    color: var(--text-secondary);
+    margin-bottom: var(--space-4);
+}
+
+.edit-profile-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-5);
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.edit-profile-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+/* Settings List */
+.settings-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+}
+
+.settings-group h3 {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-3);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--border);
+}
+
+.setting-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: var(--space-2);
+    text-decoration: none;
+    color: inherit;
+}
+
+.setting-item:hover {
+    border-color: var(--primary);
+    background: var(--bg-elevated);
+    transform: translateX(4px);
+}
+
+.setting-item.danger:hover {
+    border-color: var(--danger);
+    background: var(--danger-bg);
+}
+
+.setting-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-xl);
+    color: white;
+    flex-shrink: 0;
+    box-shadow: var(--shadow-md);
+}
+
+/* Icon colors for different sections */
+.setting-item:nth-child(1) .setting-icon {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+}
+
+.setting-item:nth-child(2) .setting-icon {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+}
+
+.setting-item:nth-child(3) .setting-icon {
+    background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
+}
+
+.setting-item:nth-child(4) .setting-icon {
+    background: linear-gradient(135deg, var(--info) 0%, var(--info-dark) 100%);
+}
+
+.setting-item:nth-child(5) .setting-icon {
+    background: linear-gradient(135deg, var(--warning) 0%, var(--warning-dark) 100%);
+}
+
+.setting-item.danger .setting-icon {
+    background: linear-gradient(135deg, var(--danger) 0%, var(--danger-dark) 100%);
+}
+
+.setting-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.setting-content h4 {
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-1);
+}
+
+.setting-content p {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.setting-item i:last-child {
+    color: var(--text-muted);
+    font-size: var(--font-size-lg);
+    flex-shrink: 0;
+}
+
+/* Toggle Switch */
+.toggle-switch {
+    position: relative;
+    width: 48px;
+    height: 24px;
+    background: var(--border);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-switch label {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: var(--radius-full);
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.toggle-switch input:checked + label {
+    transform: translateX(24px);
+}
+
+.toggle-switch:has(input:checked) {
+    background: var(--primary);
+}
+
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .profile-edit-section {
+        max-width: 100%;
+    }
+
+    .profile-form {
+        padding: var(--space-4);
+    }
+
+    .photo-section {
+        flex-direction: column;
+        text-align: center;
+        gap: var(--space-3);
+        padding: var(--space-3);
+    }
+
+    .current-photo {
+        width: 80px;
+        height: 80px;
+    }
+
+    .change-photo-btn {
+        width: 28px;
+        height: 28px;
+        font-size: var(--font-size-xs);
+    }
+
+    .photo-info h3 {
+        font-size: var(--font-size-lg);
+    }
+
+    .photo-info p {
+        font-size: var(--font-size-sm);
+    }
+
+    .form-section {
+        padding: var(--space-3);
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: var(--space-3);
+        margin-bottom: var(--space-3);
+    }
+
+    .form-actions {
+        flex-direction: column;
+        gap: var(--space-3);
+        padding-top: var(--space-3);
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
+    }
+
+    /* Profile section mobile compact */
+    .profile-section {
+        margin-bottom: var(--space-4);
+    }
+
+    .profile-card {
+        padding: var(--space-3);
+        gap: var(--space-3);
+    }
+
+    .profile-avatar {
+        width: 80px;
+        height: 80px;
+    }
+
+    .profile-info h2 {
+        font-size: var(--font-size-lg);
+        margin-bottom: var(--space-1);
+    }
+
+    .profile-info p {
+        font-size: var(--font-size-sm);
+        margin-bottom: 0;
+    }
+
+    .settings-group {
+        margin-bottom: var(--space-4);
+    }
+
+    .settings-group h3 {
+        margin-bottom: var(--space-2);
+        padding-bottom: var(--space-1);
+    }
+
+    .setting-item {
+        padding: var(--space-3);
+        gap: var(--space-3);
+        margin-bottom: var(--space-1);
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-card {
+        padding: var(--space-3);
+        gap: var(--space-3);
+    }
+
+    .profile-avatar {
+        width: 70px;
+        height: 70px;
+    }
+
+    .avatar-edit {
+        width: 24px;
+        height: 24px;
+        font-size: 10px;
+    }
+
+    .profile-info h2 {
+        font-size: var(--font-size-lg);
+    }
+
+    .profile-info p {
+        font-size: var(--font-size-xs);
+    }
+
+    .edit-profile-btn {
+        padding: var(--space-2) var(--space-4);
+        font-size: var(--font-size-sm);
+    }
+
+    .settings-group h3 {
+        font-size: var(--font-size-base);
+        margin-bottom: var(--space-2);
+    }
+
+    .setting-item {
+        padding: var(--space-2);
+        gap: var(--space-2);
+        margin-bottom: var(--space-1);
+    }
+
+    .setting-icon {
+        width: 36px;
+        height: 36px;
+        font-size: var(--font-size-sm);
+    }
+
+    .setting-content h4 {
+        font-size: var(--font-size-xs);
+    }
+
+    .setting-content p {
+        font-size: 10px;
+    }
+
+    .setting-item i:last-child {
+        font-size: var(--font-size-base);
+    }
+
+    .toggle-switch {
+        width: 36px;
+        height: 18px;
+    }
+
+    .toggle-switch label {
+        width: 14px;
+        height: 14px;
+    }
+
+    .toggle-switch input:checked + label {
+        transform: translateX(18px);
+    }
+
+
+}

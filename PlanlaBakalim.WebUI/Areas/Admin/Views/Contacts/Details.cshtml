@@ -1,0 +1,63 @@
+@model PlanlaBakalim.Core.Entities.Contact
+@{
+    ViewData["Title"] = "Mesaj Detayı";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-envelope-open-text"></i> Mesaj Detayı</h2>
+    <a href="@Url.Action("Index")" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Geri Dön
+    </a>
+ </div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Gönderen</label>
+                    <div>@Model.Name</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">E-posta</label>
+                    <div>@Model.Email</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Konu</label>
+            <div>@Model.Subject</div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Mesaj</label>
+            <div class="p-3 bg-light rounded border">@Model.Message</div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Durum</label>
+                    <div>
+                        @if (Model.IsRead) {
+                            <span class="badge bg-success">Okundu</span>
+                        } else {
+                            <span class="badge bg-warning text-dark">Okunmadı</span>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Tarih</label>
+                    <div>@Model.CreatedDate.ToString("dd.MM.yyyy HH:mm")</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

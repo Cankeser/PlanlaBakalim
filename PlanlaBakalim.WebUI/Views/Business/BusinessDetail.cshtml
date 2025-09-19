@@ -1,0 +1,378 @@
+﻿@using PlanlaBakalim.Core.Enums
+@model BusinessDetailVM
+@{
+    ViewData["Title"] = "İşletme Detayı - " + Model.Business.Name;
+}
+<section class="business-hero">
+    <div class="business-hero-image">
+        <img src="@(Model.Business.ProfileImageUrl ?? "/img/default-business.jpg")" alt="@Model.Business.Name"><
+        <div class="business-hero-overlay">
+            <div class="business-hero-content">
+                <div class="business-hero-info">
+                    <div class="business-details">
+                        <h1>@Model.Business.Name</h1>
+
+                        <div class="business-rating @(Model.Business.ReviewCount == 0 ? "no-reviews" : "")">
+                            <div class="stars">
+                                @{
+                                    int fullStars = 0;
+                                    bool halfStar = false;
+                                    int emptyStars = 5;
+
+                                    if (Model.Business.ReviewCount > 0)
+                                    {
+                                        fullStars = (int)Math.Floor(Model.Business.AverageRating);
+                                        halfStar = (Model.Business.AverageRating - fullStars) >= 0.5;
+                                        emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+                                    }
+                                }
+
+                                @for (int i = 0; i < fullStars; i++)
+                                {
+                                    <i class="fas fa-star"></i>
+                                }
+                                @if (halfStar)
+                                {
+                                    <i class="fas fa-star-half-alt"></i>
+                                }
+                                @for (int i = 0; i < emptyStars; i++)
+                                {
+                                    <i class="far fa-star"></i>
+                                }
+                            </div>
+
+                            @if (Model.Business.ReviewCount > 0)
+                            {
+                                <span>@($"{Model.Business.AverageRating:0.0} ({Model.Business.ReviewCount})")</span>
+                            }
+                            else
+                            {
+                                <span>Henüz yorum yok</span>
+                            }
+                        </div>
+                    </div>
+
+
+                </div>
+                <div class="business-hero-actions">
+                    <div class="business-status @(Model.Business.IsOpenNow ? "open" : "closed")">
+                        @(Model.Business.IsOpenNow ? "Açık" : "Kapalı")
+                    </div>
+                    <a asp-controller="Appointment" asp-action="Index" asp-route-BusinessId="@Model.Business.Id" class="btn-book-hero">
+                        <i class="fas fa-calendar-plus"></i>
+                        Randevu Al
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Business Detail Content -->
+<section class="business-detail-content">
+    <div class="container">
+        <div class="business-detail-layout">
+            <!-- Left Column - Business Info & Gallery -->
+            <div class="business-detail-main">
+                <!-- Contact Information Card -->
+                <div class="contact-info-card">
+                    <h3>İletişim Bilgileri</h3>
+                    <div class="contact-info-list">
+                        <div class="contact-info-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div class="contact-info-text">
+                                <strong>Adres</strong>
+                                <span>Bağdat Caddesi 123, Kadıköy, İstanbul</span>
+                            </div>
+                        </div>
+                        <div class="contact-info-item">
+                            <i class="fas fa-phone"></i>
+                            <div class="contact-info-text">
+                                <strong>Telefon</strong>
+                                <span>@Model.PhoneNumber</span>
+                            </div>
+                        </div>
+                        <div class="contact-info-item">
+                            <i class="fas fa-globe"></i>
+                            <div class="contact-info-text">
+                                <strong>Website</strong>
+                                <spanq>@Model.Website</spanq>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <div class="business-tabs">
+                    <button class="tab-btn active" data-tab="about">
+                        <i class="fas fa-info-circle"></i>
+                        Hakkında
+                    </button>
+                    <button class="tab-btn" data-tab="services">
+                        <i class="fas fa-list"></i>
+                        Hizmetler
+                    </button>
+                    <button class="tab-btn" data-tab="employees">
+                        <i class="fas fa-users"></i>
+                        Ekip
+                    </button>
+                    <button class="tab-btn" data-tab="reviews">
+                        <i class="fas fa-star"></i>
+                        Yorumlar
+                    </button>
+                    <button class="tab-btn" data-tab="gallery">
+                        <i class="fas fa-images"></i>
+                        Galeri
+                    </button>
+                </div>
+
+                <!-- Tab Content -->
+                <div class="tab-content">
+                    <!-- About Tab -->
+                    <div class="tab-pane active" id="about">
+                        <h3>Hakkımızda</h3>
+                        <p>@Model.Description</p>
+                    </div>
+
+                    <!-- Services Tab -->
+                    <div class="tab-pane" id="services">
+                        <h3>Hizmetlerimiz</h3>
+                        <div class="services-list">
+                            @foreach (var service in Model.Services)
+                            {
+                                <div class="service-item">
+                                    <span class="service-name">@service.Name</span>
+                                    <span class="service-price">
+                                        @service.Price.ToString("#,##0.##") ₺
+                                    </span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Employees Tab -->
+                    <div class="tab-pane" id="employees">
+                        <h3>Ekibimiz</h3>
+
+                        <div class="employees-container">
+                          
+                     
+                            @if(Model.Employees==null || !Model.Employees.Any())
+                            {
+                                <p class="no-employees">Henüz çalışan yok</p>
+                            }
+
+                     
+                            else
+                            {                               
+                                   var Imageurl = "/img/UserProfile.jpg";   
+                                <div class="employees-scroll">
+                                    @foreach (var employee in Model.Employees)
+                                    {
+                                        <div class="employee-card">
+                                            <div class="employee-image">
+                                                @if (string.IsNullOrEmpty(employee.User.ProfileUrl))
+                                                {
+                                                    Imageurl = "/img/UserProfile.jpg";
+                                                }
+                                                else{ Imageurl = employee.User.ProfileUrl;}
+
+                                               
+                                                <img src="@Imageurl" alt="@employee.User.FullName">
+                                            </div>
+                                            <div class="employee-info">
+                                                <h4>@employee.User.FullName</h4>
+                                                @if (string.IsNullOrEmpty(employee.Position))
+                                                {
+                                                    <p class="employee-position">Çalışan</p>
+                                                }
+                                                else
+                                                {
+                                                    <p class="employee-position">@employee.Position</p>
+                                                }
+                                     
+                                            </div>
+                                        </div>
+                                     }
+                                </div>
+                                <button class="employees-nav-btn employees-prev" type="button">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <button class="employees-nav-btn employees-next" type="button">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            }
+                          
+                        </div>
+                    </div>
+
+                    <!-- Reviews Tab -->
+                    <div class="tab-pane" id="reviews">
+                        @if (Model.Reviews == null || !Model.Reviews.Any())
+                        {
+                            <p class="no-reviews">Henüz yorum yok</p>
+                        }
+       
+                        else
+                        {
+                            <div class="reviews-header">
+                                <div class="reviews-summary">
+                                    <h3>Müşteri Yorumları</h3>
+                                    <div class="rating-overview">
+                                        <div class="main-rating">
+                                            @{
+                                                var avgRating = Model.Reviews.Average(r => r.Rating);
+                                                var reviewCount = Model.Reviews.Count();
+                                                int avgStars = (int)Math.Round(avgRating);
+                                            }
+                                            <h2>@avgRating.ToString("0.0")</h2>
+                                            <div class="stars">
+                                                @{
+                                                    if (Model.Business.ReviewCount > 0)
+                                                    {
+                                                        fullStars = (int)Math.Floor(Model.Business.AverageRating);
+                                                        halfStar = (Model.Business.AverageRating - fullStars) >= 0.5;
+                                                        emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+                                                    }
+                                                }
+
+                                                @for (int i = 0; i < fullStars; i++)
+                                                {
+                                                    <i class="fas fa-star"></i>
+                                                }
+                                                @if (halfStar)
+                                                {
+                                                    <i class="fas fa-star-half-alt"></i>
+                                                }
+                                                @for (int i = 0; i < emptyStars; i++)
+                                                {
+                                                    <i class="far fa-star"></i>
+                                                }
+                                            </div>
+                                            <p>@reviewCount değerlendirme</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a class="see-all-reviews-btn" asp-controller="Notification" asp-action="Index" asp-route-id="@Model.Business.Id">
+                                    <i class="fas fa-arrow-right"></i>
+                                    Tümünü Gör
+                                </a>
+                            </div>
+
+                            <div class="reviews-container">
+                                <div class="reviews-scroll">
+                                    @foreach (var review in Model.Reviews)
+                                    {
+                                        <div class="review-item">
+                                            <div class="review-header">
+                                                <div class="reviewer-info">
+                                                    <img src="~/img/UserProfile.jpg" alt="@review.User.FullName" />
+                                                    <div>
+                                                        <h4>@review.User.FullName</h4>
+                                                        <div class="stars">
+
+                                                            <span>@(new string('★',review.Rating))</span>
+                                                          
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <span class="review-date">@review.CreatedDate.ToShortDateString()</span>
+                                            </div>
+                                            <p>@review.Comment</p>
+                                        </div>
+                                    }
+                                </div>
+
+                                <button class="reviews-nav-btn reviews-prev" type="button">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <button class="reviews-nav-btn reviews-next" type="button">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Gallery Tab -->
+                    <div class="tab-pane" id="gallery">
+                        <h3>Galeri</h3>
+                        <div class="gallery-container">
+                           @if(Model.Galleries == null || !Model.Galleries.Any())
+                            {
+                               <p class="no-images">Henüz resim yok</p>
+                            }
+   
+                             else
+                             {
+                                 <div class="gallery-scroll">                            
+                                    @foreach (var image in Model.Galleries)
+                                    {
+                                        <div class="gallery-item">
+                                            <img src="@image.ImageUrl" alt="@(image.Title ?? Model.Business.Name)">
+                                        </div>
+
+                                    }                                                                                         
+                                </div>
+                                <button class="gallery-nav-btn gallery-prev" type="button">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <button class="gallery-nav-btn gallery-next" type="button">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                             }
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Sidebar -->
+            <div class="business-detail-sidebar">
+                <!-- Working Hours Card -->
+                <div class="working-hours-card">
+                    <h3>
+                        <i class="fas fa-clock"></i>
+                        Çalışma Saatleri
+                    </h3>
+                    <div class="working-hours-list">
+
+                        @if (Model.BusinessWorkingHours == null || !Model.BusinessWorkingHours.Any())
+                        {
+                            <p>Çalışma saatleri bilgisi bulunmamaktadır.</p>
+                        }
+                        else
+                        {
+                            @foreach (var item in Model.BusinessWorkingHours)
+                            {
+                                <div class="working-hour-item @(item.IsOpen ? "" : "closed")">
+                                    <span class="day">@item.Day.ToString()</span>
+                                    <span class="hours">
+                                        @if (item.OpenTime == TimeSpan.Zero || item.CloseTime == TimeSpan.Zero)
+                                        {
+                                            <text>Bilgi yok</text>
+                                        }
+                                        else if (!item.IsOpen)
+                                        {
+                                            <text>Kapalı</text>
+                                        }
+                                        else
+                                        {
+                                            @($"{item.OpenTime:hh\\:mm} - {item.CloseTime:hh\\:mm}")
+                                        }
+                                    </span>
+                                </div>
+                            }
+                        }
+
+
+                      
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+@section Scripts {
+    <script src="~/js/business-detail.js"></script>
+}

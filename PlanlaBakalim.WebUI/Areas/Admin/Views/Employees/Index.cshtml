@@ -1,0 +1,150 @@
+@model IEnumerable<PlanlaBakalim.Core.Entities.Employee>
+@{
+    ViewData["Title"] = "Çalışanlar";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-users"></i> Çalışanlar</h2>
+    <a href="@Url.Action("Create", "Employees", new { area = "Admin" })" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Yeni Çalışan
+    </a>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle"></i> @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle"></i> @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">
+            <i class="fas fa-list"></i> Çalışan Listesi
+        </h5>
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Çalışan</th>
+                            <th>İşletme</th>
+                            <th>Pozisyon</th>
+                            <th>İşe Başlama</th>
+                            <th>İşten Ayrılma</th>
+                            <th>Durum</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var employee in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold">@employee.User?.FullName</div>
+                                            <small class="text-muted">@employee.User?.Email</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">@employee.Business?.Name</span>
+                                </td>
+                                <td>@employee.Position</td>
+                                <td>@employee.StartDate.ToString("dd.MM.yyyy")</td>
+                                <td>@(employee.EndDate?.ToString("dd.MM.yyyy") ?? "Belirtilmemiş")</td>
+                                <td>
+                                    @if (employee.IsActive)
+                                    {
+                                        <span class="badge bg-success">Aktif</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Pasif</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="@Url.Action("Details", "Employees", new { area = "Admin", id = employee.Id })" 
+                                           class="btn btn-sm btn-outline-info" title="Detaylar">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="@Url.Action("Edit", "Employees", new { area = "Admin", id = employee.Id })" 
+                                           class="btn btn-sm btn-outline-warning" title="Düzenle">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form method="post" action="@Url.Action("Delete", "Employees", new { area = "Admin", id = employee.Id })" 
+                                              class="d-inline" onsubmit="return confirm('Bu çalışanı silmek istediğinizden emin misiniz?')">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Sil">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            @if (ViewBag.TotalPages > 1)
+            {
+                <nav aria-label="Sayfa navigasyonu">
+                    <ul class="pagination justify-content-center">
+                        @if (ViewBag.CurrentPage > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("Index", "Employees", new { area = "Admin", page = ViewBag.CurrentPage - 1, pageSize = ViewBag.PageSize })">
+                                    <i class="fas fa-chevron-left"></i> Önceki
+                                </a>
+                            </li>
+                        }
+
+                        @for (int i = Math.Max(1, ViewBag.CurrentPage - 2); i <= Math.Min(ViewBag.TotalPages, ViewBag.CurrentPage + 2); i++)
+                        {
+                            <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                                <a class="page-link" href="@Url.Action("Index", "Employees", new { area = "Admin", page = i, pageSize = ViewBag.PageSize })">@i</a>
+                            </li>
+                        }
+
+                        @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("Index", "Employees", new { area = "Admin", page = ViewBag.CurrentPage + 1, pageSize = ViewBag.PageSize })">
+                                    Sonraki <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">Henüz çalışan bulunmuyor</h5>
+                <p class="text-muted">İlk çalışanı eklemek için yukarıdaki butonu kullanın.</p>
+            </div>
+        }
+    </div>
+</div>
+
+

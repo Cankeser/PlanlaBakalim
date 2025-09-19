@@ -1,0 +1,123 @@
+@model PlanlaBakalim.Core.Entities.Employee
+@{
+    ViewData["Title"] = "Çalışan Detayları";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-user"></i> Çalışan Detayları</h2>
+    <div>
+        <a href="@Url.Action("Edit", "Employees", new { area = "Admin", id = Model.Id })" class="btn btn-warning">
+            <i class="fas fa-edit"></i> Düzenle
+        </a>
+        <a href="@Url.Action("Index", "Employees", new { area = "Admin" })" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Geri Dön
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-user"></i> Çalışan Bilgileri
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Kullanıcı:</label>
+                            <p class="form-control-plaintext">@Model.User?.FullName</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">E-posta:</label>
+                            <p class="form-control-plaintext">@Model.User?.Email</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">İşletme:</label>
+                            <p class="form-control-plaintext">@Model.Business?.Name</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Pozisyon:</label>
+                            <p class="form-control-plaintext">@Model.Position</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">İşe Başlama Tarihi:</label>
+                            <p class="form-control-plaintext">@Model.StartDate.ToString("dd.MM.yyyy")</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">İşten Ayrılma Tarihi:</label>
+                            <p class="form-control-plaintext">@(Model.EndDate?.ToString("dd.MM.yyyy") ?? "Belirtilmemiş")</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Durum:</label>
+                            <p class="form-control-plaintext">
+                                @if (Model.IsActive)
+                                {
+                                    <span class="badge bg-success">Aktif</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Pasif</span>
+                                }
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Oluşturulma Tarihi:</label>
+                            <p class="form-control-plaintext">@Model.CreatedDate.ToString("dd.MM.yyyy HH:mm")</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-info-circle"></i> Bilgi
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">
+                    <i class="fas fa-lightbulb text-warning"></i>
+                    Bu sayfada çalışanın tüm bilgilerini görüntüleyebilirsiniz.
+                </p>
+                <hr>
+                <h6 class="text-muted">İşlemler:</h6>
+                <ul class="text-muted small">
+                    <li>Bilgileri düzenleyebilirsiniz</li>
+                    <li>Durumu değiştirebilirsiniz</li>
+                    <li>Çalışanı silebilirsiniz</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+

@@ -1,0 +1,329 @@
+@model PlanlaBakalim.Core.Entities.Appointment
+@{
+    ViewData["Title"] = "Randevu Detayları";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-calendar-check"></i> Randevu Detayları</h2>
+    <a href="@Url.Action("Index", "Appointments", new { area = "Admin" })" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Geri Dön
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-calendar-alt"></i> Randevu Bilgileri
+                    @switch (Model.Status)
+                    {
+                        case PlanlaBakalim.Core.Enums.AppointmentStatus.Pending:
+                            <span class="badge bg-warning ms-2">Beklemede</span>
+                            break;
+                        case PlanlaBakalim.Core.Enums.AppointmentStatus.Confirmed:
+                            <span class="badge bg-success ms-2">Onaylandı</span>
+                            break;
+                        case PlanlaBakalim.Core.Enums.AppointmentStatus.Cancelled:
+                            <span class="badge bg-danger ms-2">İptal</span>
+                            break;
+                        case PlanlaBakalim.Core.Enums.AppointmentStatus.Completed:
+                            <span class="badge bg-info ms-2">Tamamlandı</span>
+                            break;
+                    }
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Müşteri Bilgileri:</h6>
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-user me-2"></i>
+                            <span>@(Model.User?.FullName ?? Model.GuestFullName)</span>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-envelope me-2"></i>
+                            <span>@(Model.User?.Email ?? Model.GuestEmail)</span>
+                        </div>
+                        @if (Model.User != null)
+                        {
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-phone me-2"></i>
+                                <span>@Model.User.Phone</span>
+                            </div>
+                        }
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h6>İşletme Bilgileri:</h6>
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-store me-2"></i>
+                            <span>@Model.Business?.Name</span>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-tag me-2"></i>
+                            <span>@Model.Business?.Category?.Name</span>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-envelope me-2"></i>
+                            <span>@Model.Business?.Email</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Tarih ve Saat:</h6>
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-calendar me-2"></i>
+                            <span>@Model.AppointmentDate.ToString("dd.MM.yyyy")</span>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-clock me-2"></i>
+                            <span>@Model.AppointmentTime.ToString("HH:mm")</span>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h6>Çalışan:</h6>
+                        @if (Model.Employee != null && Model.Employee.User != null)
+                        {
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-user-tie me-2"></i>
+                                <span>@Model.Employee.User.FullName</span>
+                            </div>
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-briefcase me-2"></i>
+                                <span>@Model.Employee.Position</span>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-user-slash me-2"></i>
+                                <span class="text-muted">Çalışan atanmamış</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+                
+                @if (!string.IsNullOrEmpty(Model.Note))
+                {
+                    <hr>
+                    <div class="mb-3">
+                        <h6>Not:</h6>
+                        <p class="border p-3 rounded bg-light">@Model.Note</p>
+                    </div>
+                }
+                
+                <div class="mt-4">
+                    <h6>Tarih Bilgileri:</h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <small class="text-muted">Oluşturulma Tarihi:</small>
+                            <div>@Model.CreatedDate.ToString("dd.MM.yyyy HH:mm")</div>
+                        </div>
+                        @if (Model.UpdatedDate.HasValue)
+                        {
+                            <div class="col-md-6">
+                                <small class="text-muted">Son Güncelleme:</small>
+                                <div>@Model.UpdatedDate.Value.ToString("dd.MM.yyyy HH:mm")</div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-cogs"></i> İşlemler
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    @if (Model.Status == PlanlaBakalim.Core.Enums.AppointmentStatus.Pending)
+                    {
+                        <button class="btn btn-success" 
+                                onclick="updateAppointmentStatus(@Model.Id, 2)">
+                            <i class="fas fa-check"></i> Onayla
+                        </button>
+                    }
+                    
+                    @if (Model.Status != PlanlaBakalim.Core.Enums.AppointmentStatus.Cancelled)
+                    {
+                        <button class="btn btn-danger" 
+                                onclick="updateAppointmentStatus(@Model.Id, 4)">
+                            <i class="fas fa-times"></i> İptal Et
+                        </button>
+                    }
+                    
+                    <button class="btn btn-outline-danger" 
+                            onclick="deleteAppointment(@Model.Id)">
+                        <i class="fas fa-trash"></i> Sil
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-info-circle"></i> Bilgiler
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <strong>Randevu ID:</strong> @Model.Id
+                </div>
+                <div class="mb-2">
+                    <strong>Müşteri ID:</strong> @(Model.UserId.HasValue ? Model.UserId.Value : 0)
+                </div>
+                <div class="mb-2">
+                    <strong>İşletme ID:</strong> @Model.BusinessId
+                </div>
+                <div class="mb-2">
+                    <strong>Çalışan ID:</strong> @Model.EmployeeId
+                </div>
+                <div class="mb-2">
+                    <strong>Durum:</strong> @Model.Status
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-history"></i> Durum Geçmişi
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-primary"></div>
+                        <div class="timeline-content">
+                            <h6>Randevu Oluşturuldu</h6>
+                            <small class="text-muted">@Model.CreatedDate.ToString("dd.MM.yyyy HH:mm")</small>
+                        </div>
+                    </div>
+                    
+                    @if (Model.Status == PlanlaBakalim.Core.Enums.AppointmentStatus.Confirmed)
+                    {
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-success"></div>
+                            <div class="timeline-content">
+                                <h6>Randevu Onaylandı</h6>
+                                <small class="text-muted">@Model.UpdatedDate?.ToString("dd.MM.yyyy HH:mm")</small>
+                            </div>
+                        </div>
+                    }
+                    
+                    @if (Model.Status == PlanlaBakalim.Core.Enums.AppointmentStatus.Cancelled)
+                    {
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-danger"></div>
+                            <div class="timeline-content">
+                                <h6>Randevu İptal Edildi</h6>
+                                <small class="text-muted">@Model.UpdatedDate?.ToString("dd.MM.yyyy HH:mm")</small>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function updateAppointmentStatus(appointmentId, status) {
+            const statusText = status === 2 ? 'onaylamak' : 'iptal etmek';
+            const message = `Bu randevuyu ${statusText} istediğinizden emin misiniz?`;
+            
+            if (confirm(message)) {
+                fetch(`@Url.Action("UpdateStatus", "Appointments", new { area = "Admin" })/${appointmentId}?status=${status}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        AdminPanel.showAlert('Randevu durumu başarıyla güncellendi.', 'success');
+                        location.reload();
+                    } else {
+                        AdminPanel.showAlert('İşlem sırasında bir hata oluştu.', 'danger');
+                    }
+                })
+                .catch(error => {
+                    AdminPanel.showAlert('İşlem sırasında bir hata oluştu.', 'danger');
+                });
+            }
+        }
+
+        function deleteAppointment(appointmentId) {
+            const message = 'Bu randevuyu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!';
+            
+            if (confirm(message)) {
+                fetch(`@Url.Action("Delete", "Appointments", new { area = "Admin" })/${appointmentId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        AdminPanel.showAlert('Randevu başarıyla silindi.', 'success');
+                        window.location.href = '@Url.Action("Index", "Appointments", new { area = "Admin" })';
+                    } else {
+                        AdminPanel.showAlert('İşlem sırasında bir hata oluştu.', 'danger');
+                    }
+                })
+                .catch(error => {
+                    AdminPanel.showAlert('İşlem sırasında bir hata oluştu.', 'danger');
+                });
+            }
+        }
+    </script>
+}
+
+<style>
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -30px;
+    top: 5px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.timeline-content h6 {
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.timeline-content small {
+    color: #6c757d;
+}
+</style>
+
+

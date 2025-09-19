@@ -1,0 +1,263 @@
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="page-header">
+    <h1 class="page-title">Dashboard</h1>
+    <p class="page-subtitle">Sistem genel durumu ve istatistikler</p>
+</div>
+
+<!-- Statistics Cards - Mobile Optimized -->
+<div class="stats-grid">
+    <div class="stat-card primary">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <div class="text-xs">Toplam Kullanıcı</div>
+                <div class="h5">@ViewBag.TotalUsers</div>
+            </div>
+            <i class="fas fa-users stat-icon text-primary"></i>
+        </div>
+    </div>
+    
+    <div class="stat-card success">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <div class="text-xs">Toplam İşletme</div>
+                <div class="h5">@ViewBag.TotalBusinesses</div>
+            </div>
+            <i class="fas fa-store stat-icon text-success"></i>
+        </div>
+    </div>
+    
+    <div class="stat-card warning">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <div class="text-xs">Toplam Randevu</div>
+                <div class="h5">@ViewBag.TotalAppointments</div>
+            </div>
+            <i class="fas fa-calendar-alt stat-icon text-warning"></i>
+        </div>
+    </div>
+    
+    <div class="stat-card danger">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <div class="text-xs">Toplam Yorum</div>
+                <div class="h5">@ViewBag.TotalReviews</div>
+            </div>
+            <i class="fas fa-star stat-icon text-danger"></i>
+        </div>
+    </div>
+</div>
+
+<!-- Charts and Activities -->
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Aylık Randevu Trendi</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="appointmentChart" height="100"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Kategori Dağılımı</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="categoryChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activities -->
+<div class="row mt-4">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Son Kayıt Olan Kullanıcılar</h5>
+            </div>
+            <div class="card-body">
+                <div class="activity-list">
+                    @if (ViewBag.RecentUsers != null && ((dynamic)ViewBag.RecentUsers).Count > 0)
+                    {
+                        @foreach (var user in ViewBag.RecentUsers)
+                        {
+                            <div class="activity-item">
+                                <div class="activity-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <div class="activity-title">@user.FullName</div>
+                                    <div class="activity-subtitle">@user.CreatedDate.ToString("dd MMMM yyyy HH:mm") tarihinde kayıt oldu</div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted py-3">
+                            <i class="fas fa-user-slash fa-2x mb-2"></i>
+                            <p>Henüz kayıt olan kullanıcı bulunmuyor</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Son Eklenen İşletmeler</h5>
+            </div>
+            <div class="card-body">
+                <div class="activity-list">
+                    @if (ViewBag.RecentBusinesses != null && ((dynamic)ViewBag.RecentBusinesses).Count > 0)
+                    {
+                        @foreach (var business in ViewBag.RecentBusinesses)
+                        {
+                            <div class="activity-item">
+                                <div class="activity-avatar">
+                                    <i class="fas fa-store"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <div class="activity-title">@business.Name</div>
+                                    <div class="activity-subtitle">@business.CategoryName - @business.CreatedDate.ToString("dd MMMM yyyy HH:mm") tarihinde eklendi</div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted py-3">
+                            <i class="fas fa-store-slash fa-2x mb-2"></i>
+                            <p>Henüz eklenen işletme bulunmuyor</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Hızlı İşlemler</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <a href="@Url.Action("Index", "Users")" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-users fa-2x mb-2"></i><br>
+                            Kullanıcıları Yönet
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="@Url.Action("Index", "Businesses")" class="btn btn-outline-success w-100">
+                            <i class="fas fa-store fa-2x mb-2"></i><br>
+                            İşletmeleri Yönet
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="@Url.Action("Index", "Gallery")" class="btn btn-outline-info w-100">
+                            <i class="fas fa-images fa-2x mb-2"></i><br>
+                            Galeriyi Yönet
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="@Url.Action("Index", "Settings")" class="btn btn-outline-warning w-100">
+                            <i class="fas fa-cog fa-2x mb-2"></i><br>
+                            Ayarları Yönet
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Randevu trendi grafiği
+        const appointmentCtx = document.getElementById('appointmentChart').getContext('2d');
+        new Chart(appointmentCtx, {
+            type: 'line',
+            data: {
+                labels: ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran'],
+                datasets: [{
+                    label: 'Randevu Sayısı',
+                    data: [65, 59, 80, 81, 56, 55],
+                    borderColor: '#6366f1',
+                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Kategori dağılımı grafiği
+        const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+        new Chart(categoryCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Güzellik', 'Sağlık', 'Eğitim', 'Diğer'],
+                datasets: [{
+                    data: [30, 25, 20, 25],
+                    backgroundColor: [
+                        '#6366f1',
+                        '#10b981',
+                        '#f59e0b',
+                        '#ef4444'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+}
+

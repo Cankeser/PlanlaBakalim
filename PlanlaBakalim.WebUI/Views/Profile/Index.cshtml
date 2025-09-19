@@ -1,0 +1,685 @@
+﻿@model ProfileVM
+@{
+    ViewData["Title"] = "Kullanıcı Profili";
+}
+<main class="profile-main">
+    <div class="container">
+        <div class="profile-layout">
+            <!-- Mobile Sidebar Overlay -->
+            <div class="mobile-sidebar-overlay"></div>
+            
+            <!-- Profile Sidebar -->
+            <aside class="profile-sidebar">
+                <div class="profile-card">
+                    <div class="profile-avatar">
+                        <img src="@(Model?.User?.ProfileUrl ?? "/img/userProfile.jpg")"
+                             alt="@(Model?.User?.FullName ?? "Kullanıcı")">                      
+                    </div>
+                    <div class="profile-info">
+                        <h3>@(Model?.User?.FullName ?? "Kullanıcı")</h3>
+                        <p class="profile-email">@(Model?.User?.Email ?? "")</p>
+                        <div class="profile-stats">
+                            <div class="bonus-card">
+                                <div class="bonus-icon">
+                                    <i class="fas fa-coins"></i>
+                                </div>
+                                <div class="bonus-content">
+                                    <span class="bonus-number">0</span>
+                                    <span class="bonus-label">Bonus</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <nav class="sidebar-nav">
+                    <ul class="sidebar-nav-menu">
+                        <li>
+                            <a href="#" class="sidebar-nav-item active" data-section="overview">
+                                <i class="fas fa-home"></i>
+                                <span>Genel Bakış</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="sidebar-nav-item" data-section="appointments">
+                                <i class="fas fa-calendar"></i>
+                                <span>Randevular</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="sidebar-nav-item" data-section="favorites">
+                                <i class="fas fa-heart"></i>
+                                <span>Favoriler</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="sidebar-nav-item" data-section="points">
+                                <i class="fas fa-star"></i>
+                                <span>Puan Sistemi</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="sidebar-nav-item" data-section="settings">
+                                <i class="fas fa-cog"></i>
+                                <span>Ayarlar</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Mobile Sidebar Toggle -->
+                <button class="mobile-sidebar-toggle" id="mobileSidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+
+                <!-- Overview Section -->
+                <section id="overview" class="content-section active">
+                    <div class="section-header">
+                        <h2>Hoş Geldin, @(Model?.User?.FullName ?? "Kullanıcı")! 👋</h2>
+                    </div>
+
+                    <!-- Next Appointment Card -->
+                    <div class="next-appointment-card">
+                        <div class="appointment-header">
+                            <h3><i class="fas fa-clock"></i> Sonraki Randevunuz</h3>
+                            @if (Model?.NextAppointment != null)
+                            {
+                             
+                                    var appointmentDate = Model.NextAppointment.AppointmentDate;
+                                    var appointmentTime = Model.NextAppointment.AppointmentTime;
+                                    var appointmentDateTime = appointmentDate.AddHours(appointmentTime.Hours).AddMinutes(appointmentTime.Minutes);
+                                
+                                <div class="appointment-countdown" data-appointment-date="@appointmentDateTime.ToString("yyyy-MM-ddTHH:mm:ss")">
+                                    <span class="countdown-label">Kalan Süre:</span>
+                                    <span class="countdown-time" id="appointmentCountdown">--:--:--</span>
+                                </div>
+                            }
+                        </div>
+                        <div class="appointment-content">
+                            @if(Model?.NextAppointment == null)
+                            {
+                                <p>Yaklaşan randevunuz yok.</p>
+                            }
+                            else
+                            {
+                                <div class="appointment-business">
+                                    <div class="appointment-business-info">
+                                        <img src="@(Model.NextAppointment.Business?.ProfileImageUrl ?? "/images/default-business.png")"
+                                             alt="@(Model.NextAppointment.Business?.Name ?? "İşletme")">
+                                        <div>
+                                            <h4>@(Model.NextAppointment.Business?.Name ?? "İşletme")</h4>
+                                        </div>
+                                    </div>
+                                    <div class="appointment-actions">                                
+                                        @if (!string.IsNullOrEmpty(Model.NextAppointment.Business?.PhoneNumber))
+                                        {
+                                            <a href="tel:@Model.NextAppointment.Business.PhoneNumber" class="btn btn-secondary appointment-btn">
+                                                <i class="fas fa-phone"></i> Ara
+                                            </a>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Recent Activities -->
+                    <div class="recent-activities">
+                        <div class="activities-header">
+                            <h3>Son Aktiviteler</h3>
+                        </div>
+                        <div class="activities-timeline">
+                            @if (Model.Activities == null || !Model.Activities.Any())
+                            {
+                                <div class="timeline-empty">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span>Henüz aktivite yok</span>
+                                </div>
+                            }
+                            else
+                            {
+                                @foreach (var act in Model.Activities)
+                                {
+                                    var icon = act.Icon switch
+                                    {
+                                        "check" => "fa-check",
+                                        "times" => "fa-times",
+                                        "star" => "fa-star",
+                                        "redo" => "fa-redo",
+                                        "calendar-plus" => "fa-calendar-plus",
+                                        _ => "fa-info-circle"
+                                    };
+                                    <div class="timeline-item" style="display:flex; align-items:flex-start; gap:12px; width:100%;">
+                                        <div class="timeline-icon" style="flex:0 0 auto;">
+                                            <i class="fas @icon"></i>
+                                        </div>
+                                        <div class="timeline-content" style="flex:1 1 auto; width:100%;">
+                                            <div class="timeline-row" style="display:flex; align-items:center; justify-content:space-between; gap:8px; width:100%;">
+                                                <div style="flex:1 1 auto; min-width:0;">
+                                                    <h4>@act.Title</h4>
+                                                    <p>@act.Description</p>
+                                                </div>
+                                                <span class="timeline-time" data-time="@act.CreatedAt.ToString("o")" style="flex:0 0 auto; white-space:nowrap; text-align:right; margin-left:8px;"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Appointments Section -->
+                <section id="appointments" class="content-section">
+                    <div class="section-header">
+                        <h2>Randevularım 📅</h2>
+                    </div>
+
+                    <!-- Tab Navigation -->
+                    <div class="appointment-tabs">
+                        <button class="tab-btn active" data-tab="active">
+                            <i class="fas fa-clock"></i>
+                            <span>Aktif Randevular</span>
+                            <span class="tab-count">@(Model?.Appointments?.ActiveAppointments?.Count ?? 0)</span>
+                        </button>
+                        <button class="tab-btn" data-tab="past">
+                            <i class="fas fa-history"></i>
+                            <span>Geçmiş Randevular</span>
+                            <span class="tab-count">@(Model?.Appointments?.PastAppointments?.Count ?? 0)</span>
+                        </button>
+                    </div>
+
+                    <!-- Active Appointments Tab -->
+                    <div class="tab-content appointmentTab active" id="active-tab">
+                        <div class="appointments-list-compact">
+                            @if(Model?.Appointments?.ActiveAppointments == null || !Model.Appointments.ActiveAppointments.Any())
+                            {
+                                <div class="no-appointments">
+                                    <i class="fas fa-calendar-times"></i>
+                                    <h3>Aktif randevunuz yok</h3>
+                                </div>
+                            }
+                            else
+                            {
+                                @foreach (var appointment in Model.Appointments.ActiveAppointments)
+                                {
+                                    var statusClass = appointment.Status == AppointmentStatus.Pending ? "pending" : 
+                                                    appointment.Status == AppointmentStatus.Confirmed ? "confirmed" : "";
+                                    var statusText = appointment.Status == AppointmentStatus.Pending ? "Beklemede" : 
+                                                   appointment.Status == AppointmentStatus.Confirmed ? "Onaylandı" : "";
+
+                                    <div class="appointment-item-compact @statusClass" data-appointment="@appointment.Id">
+                                        <div class="appointment-header-compact">
+                                            <div class="appointment-business-compact">
+                                                <img src="@(appointment.Business?.ProfileImageUrl ?? "/img/default-business.jpg")"
+                                                     alt="@(appointment.Business?.Name ?? "İşletme")">
+                                                <div class="business-details">
+                                                    <h4>@(appointment.Business?.Name ?? "İşletme")</h4>
+                                                </div>
+                                            </div>
+                                            <div class="appointment-status-compact">
+                                                <span class="status-badge @statusClass">@statusText</span>
+                                                <button class="expand-btn" data-target="@appointment.Id">
+                                                    <i class="fas fa-chevron-down"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="appointment-details-compact" id="details-@appointment.Id">
+                                            <div class="details-grid">
+                                                <div class="detail-item-compact">
+                                                    <i class="fas fa-calendar"></i>
+                                                    <span>@appointment.AppointmentTime.ToString(@"hh\:mm"), @appointment.AppointmentDate.ToString("dd MMM yyyy")</span>
+                                                </div>
+                                                @if (appointment.Business?.BusinessAddress?.District != null)
+                                                {
+                                                    <div class="detail-item-compact">
+                                                        <i class="fas fa-map-marker-alt"></i>
+                                                        <span>@appointment.Business.BusinessAddress.District.Name, @(appointment.Business.BusinessAddress.District.City?.Name ?? "")</span>
+                                                    </div>
+                                                }
+                                            </div>
+                                            <div class="appointment-actions-compact">
+                                                @if (!string.IsNullOrEmpty(appointment.Business?.PhoneNumber))
+                                                {
+                                                    <button class="action-btn-compact" title="Ara" onclick="window.open('tel:@appointment.Business.PhoneNumber')">
+                                                        <i class="fas fa-phone"></i>
+                                                        <span class="btn-text">Ara</span>
+                                                    </button>
+                                                }
+                                                <button class="action-btn-compact danger" title="İptal Et">
+                                                    <i class="fas fa-times"></i>
+                                                    <span class="btn-text">İptal</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Past Appointments Tab -->
+                    <div class="tab-content appointmentTab" id="past-tab">
+                        <div class="appointments-list-compact">
+                            @if (Model?.Appointments?.PastAppointments == null || !Model.Appointments.PastAppointments.Any())
+                            {
+                                <div class="no-appointments">
+                                    <i class="fas fa-calendar-check"></i>
+                                    <h3>Geçmiş randevunuz yok</h3>
+                                </div>
+                            }
+                            else
+                            {
+                                @foreach (var appointment in Model.Appointments.PastAppointments)
+                                {
+                                    var statusClass = appointment.Status == AppointmentStatus.Completed ? "completed" : 
+                                                    appointment.Status == AppointmentStatus.Cancelled ? "cancelled" : "";
+                                    var statusText = appointment.Status == AppointmentStatus.Completed ? "Tamamlandı" : 
+                                                   appointment.Status == AppointmentStatus.Cancelled ? "İptal Edildi" : "";
+
+                                    <div class="appointment-item-compact @statusClass" data-appointment="@appointment.Id">
+                                        <div class="appointment-header-compact">
+                                            <div class="appointment-business-compact">
+                                                <img src="@(appointment.Business?.ProfileImageUrl ?? "/img/default-business.jpg")"
+                                                     alt="@(appointment.Business?.Name ?? "İşletme")">
+                                                <div class="business-details">
+                                                    <h4>@(appointment.Business?.Name ?? "İşletme")</h4>
+                                                </div>
+                                            </div>
+                                            <div class="appointment-status-compact">
+                                                <span class="status-badge @statusClass">@statusText</span>
+                                                <button class="expand-btn" data-target="@appointment.Id">
+                                                    <i class="fas fa-chevron-down"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="appointment-details-compact" id="details-@appointment.Id">
+                                            <div class="details-grid">
+                                                <div class="detail-item-compact">
+                                                    <i class="fas fa-calendar"></i>
+                                                    <span>@appointment.AppointmentTime.ToString(@"hh\:mm"), @appointment.AppointmentDate.ToString("dd MMM yyyy")</span>
+                                                </div>
+                                                @if (appointment.Business?.BusinessAddress?.District != null)
+                                                {
+                                                    <div class="detail-item-compact">
+                                                        <i class="fas fa-map-marker-alt"></i>
+                                                        <span>@appointment.Business.BusinessAddress.District.Name, @(appointment.Business.BusinessAddress.District.City?.Name ?? "")</span>
+                                                    </div>
+                                                }
+                                            </div>
+                                            <div class="appointment-actions-compact">
+                                                <button class="action-btn-compact" title="Değerlendir" onclick="openRatingModal()">
+                                                    <i class="fas fa-star"></i>
+                                                    <span class="btn-text">Puan</span>
+                                                </button>
+                                                <button class="action-btn-compact" title="Tekrarla">
+                                                    <i class="fas fa-redo"></i>
+                                                    <span class="btn-text">Tekrar</span>
+                                                </button>
+                                                <button class="action-btn-compact" title="Detaylar" onclick="loadPastAppointmentDetail(@appointment.Id)">
+                                                    <i class="fas fa-eye"></i>
+                                                    <span class="btn-text">Detay</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Favorites Section -->
+                <section id="favorites" class="content-section">
+                    <div class="section-header">
+                        <h2>Favori İşletmelerim ❤️</h2>
+                    </div>
+
+                    @if(Model?.Favorites == null || !Model.Favorites.Any())
+                    {
+                        <div class="no-favorites">
+                            <i class="fas fa-heart-broken"></i>
+                            <h3>Henüz favori işletmeniz yok</h3>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="favorites-grid">
+                            @foreach (var favorite in Model.Favorites)
+                            {
+                                <div class="favorite-card">
+                                    <div class="favorite-image">
+                                        <img src="@(favorite.Business?.ProfileImageUrl ?? "/img/default-business.jpg")"
+                                             alt="@(favorite.Business?.Name ?? "İşletme")">
+                                        <button class="favorite-remove">
+                                            <i class="fas fa-heart"></i>
+                                        </button>
+                                    </div>
+                                    <div class="favorite-content">
+                                        <h3>@(favorite.Business?.Name ?? "İşletme")</h3>
+                                        <div class="favorite-actions">
+                                            @if (favorite.Business != null)
+                                            {
+                                                <a asp-controller="Business" asp-action="BusinessDetail" 
+                                                   asp-route-Id="@favorite.BusinessId" 
+                                                   asp-route-name="@UrlConverter.ConvertToUrl(favorite.Business.Name)" 
+                                                   class="btn-detail">İşletme Detayı</a>
+                                                <a class="btn-book" asp-controller="Appointment" 
+                                                   asp-action="Index" 
+                                                   asp-route-BusinessId="@favorite.Business.Id">Randevu Al</a>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </section>
+
+                <!-- Points System Section -->
+                <section id="points" class="content-section">
+                    <div class="section-header">
+                        <h2>Puan Sistemi ⭐</h2>
+                    </div>
+
+                    <!-- Points Overview -->
+                    <div class="points-overview">
+                        <div class="points-card">
+                            <div class="points-icon">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="points-content">
+                                <h3>Toplam Puanınız</h3>
+                                <div class="points-number">2,450</div>
+                                <p>Bir sonraki seviyeye 550 puan kaldı</p>
+                            </div>
+                        </div>
+                        <div class="points-card">
+                            <div class="points-icon">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <div class="points-content">
+                                <h3>Seviye</h3>
+                                <div class="level-badge">Gümüş</div>
+                                <p>3. seviye kullanıcı</p>
+                            </div>
+                        </div>
+                        <div class="points-card">
+                            <div class="points-icon">
+                                <i class="fas fa-gift"></i>
+                            </div>
+                            <div class="points-content">
+                                <h3>Kullanılabilir Ödül</h3>
+                                <div class="reward-amount">€25,00</div>
+                                <p>Bir sonraki hizmetinizde geçerli</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Settings Section -->
+                <section id="settings" class="content-section">
+                    <div class="section-header">
+                        <h2>Hesap Ayarları ⚙️</h2>
+                    </div>
+
+                    <!-- Settings Tabs -->
+                    <div class="settings-tabs">
+                        <button class="settings-tab-btn active" data-tab="profile">
+                            <i class="fas fa-user"></i>
+                            <span>Profil</span>
+                        </button>
+                        <button class="settings-tab-btn" data-tab="security">
+                            <i class="fas fa-lock"></i>
+                            <span>Şifre</span>
+                        </button>
+                        <button class="settings-tab-btn danger" data-tab="danger">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>Hesap</span>
+                        </button>
+                    </div>
+
+                    <!-- Profile Tab -->
+                    <div class="settings-tab-content active" id="profile-tab">
+                        <div class="settings-grid">
+                            <!-- Profile Photo -->
+                            <div class="settings-card">
+                                <div class="settings-header">
+                                    <i class="fas fa-camera"></i>
+                                    <h3>Profil Fotoğrafı</h3>
+                                </div>
+                                <div class="settings-content">
+                                    <div class="profile-photo-section">
+                                        <div class="photo-container">
+                                            <div class="current-photo">
+                                                <img src="@(Model?.User?.ProfileUrl ?? "/img/userProfile.jpg")"
+                                                     alt="Mevcut Fotoğraf">
+                                            </div>
+                                        </div>
+                                        <div class="photo-actions">
+                                            <div class="action-group">
+                                                <button class="btn btn-modern primary" id="uploadPhotoBtn">
+                                                    <i class="fas fa-upload"></i>
+                                                    <span>Yeni Fotoğraf</span>
+                                                </button>
+                                                <button class="btn btn-modern secondary" id="savePhotoBtn">
+                                                    <i class="fas fa-save"></i>
+                                                    <span>Kaydet</span>
+                                                </button>
+                                            </div>
+                                          
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Profile Information -->
+                            <div class="settings-card">
+                                <div class="settings-header">
+                                    <i class="fas fa-user"></i>
+                                    <h3>Profil Bilgileri</h3>
+                                </div>
+                                <div class="settings-content">
+                                    <div class="form-group">
+                                        <label>Ad</label>
+                                        <input type="text" id="fullName"
+                                               value="@(Model?.User?.FullName ?? "")"
+                                               class="form-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>E-posta</label>
+                                        <input type="email" id="email"
+                                               value="@(Model?.User?.Email ?? "")"
+                                               class="form-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Telefon</label>
+                                        <input type="tel" id="phone"
+                                               value="@(Model?.User?.Phone ?? "")"
+                                               class="form-input">
+                                    </div>
+                                    <button class="btn btn-primary" id="updateProfileBtn">
+                                        Güncelle
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security Tab -->
+                    <div class="settings-tab-content" id="security-tab">
+                        <div class="settings-grid">
+                            <!-- Password Change -->
+                            <div class="settings-card">
+                                <div class="settings-header">
+                                    <i class="fas fa-lock"></i>
+                                    <h3>Şifre Değiştir</h3>
+                                </div>
+                                <div class="settings-content">
+                                    <div class="form-group">
+                                        <label>Mevcut Şifre</label>
+                                        <input type="password" id="currentPassword" autocomplete="new-password" class="form-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Yeni Şifre</label>
+                                        <input type="password" id="newPassword" autocomplete="new-password" class="form-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Yeni Şifre (Tekrar)</label>
+                                        <input type="password" id="confirmPassword" autocomplete="new-password" class="form-input">
+                                    </div>
+                                    <button class="btn btn-primary" id="changePasswordBtn">Şifre Değiştir</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Danger Tab -->
+                    <div class="settings-tab-content" id="danger-tab">
+                        <div class="settings-grid">
+                            <!-- Account Management -->
+                            <div class="settings-card danger-zone">
+                                <div class="settings-header danger">
+                                    <i class="fas fa-user-cog"></i>
+                                    <h3>Hesap Yönetimi</h3>
+                                </div>
+                                <div class="settings-content">
+                                    <div class="account-management-single">
+                                        <div class="account-action-card danger">
+                                            <div class="action-icon danger">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </div>
+                                            <div class="action-content">
+                                                <h4>Hesabı Sil</h4>
+                                                <p>Hesabınızı kalıcı olarak silin. Bu işlem geri alınamaz.</p>
+                                            </div>
+                                            <button class="btn btn-modern danger" id="deleteAccountBtn">
+                                                <i class="fas fa-trash-alt"></i>
+                                                <span>Hesabımı Sil</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </div>
+</main>
+<script>
+    (function () {
+        function timeAgoStr(date) {
+            const now = new Date();
+            const diffMs = now - date;
+            const sec = Math.floor(diffMs / 1000);
+            const min = Math.floor(sec / 60);
+            const hr = Math.floor(min / 60);
+            const day = Math.floor(hr / 24);
+            if (sec < 60) return 'şimdi';
+            if (min < 60) return `${min} dakika önce`;
+            if (hr < 24) return `${hr} saat önce`;
+            return `${day} gün önce`;
+        }
+        function renderTimes() {
+            document.querySelectorAll('.timeline-time[data-time]')
+                .forEach(el => {
+                    const iso = el.getAttribute('data-time');
+                    const d = iso ? new Date(iso) : null;
+                    if (!d || isNaN(d)) return;
+                    el.textContent = timeAgoStr(d);
+                });
+        }
+        renderTimes();
+        setInterval(renderTimes, 60000);
+    })();
+</script>
+<!-- Randevu Detay Modal -->
+<div class="modal-overlay" id="appointmentDetailModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Randevu Detayları</h3>
+            <button class="modal-close" onclick="closeAppointmentDetailModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="appointment-detail-info">
+                <div class="detail-row">
+                    <strong>İşletme:</strong>
+                    <span id="modal-business-name">AutoFix</span>
+                </div>
+                <div class="detail-row">
+                    <strong>Kategori:</strong>
+                    <span id="modal-business-category">Autoreparatur & Wartung</span>
+                </div>
+                <div class="detail-row">
+                    <strong>Randevu Tarihi:</strong>
+                    <span id="modal-business-date">Yarın, 14:00</span>
+                </div>
+                <div class="detail-row">
+                    <strong>Çalışan:</strong>
+                    <span id="modal-employee">-</span>
+                </div>
+                <div class="detail-row">
+                    <strong>Ücret:</strong>
+                    <span id="modal-price">150,00 €</span>
+                </div>
+                <div class="detail-row">
+                    <strong>Süre:</strong>
+                    <span id="modal-duration">2 saat</span>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeAppointmentDetailModal()">Kapat</button>
+        </div>
+    </div>
+</div>
+
+<!-- Değerlendirme Modal -->
+<div class="modal-overlay" id="ratingModal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Hizmet Değerlendirmesi</h3>
+            <button class="modal-close" onclick="closeRatingModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="rating-section">
+                <h4>Değerlendirmeniz</h4>
+                <div class="star-rating">
+                    <i class="fas fa-star" data-rating="1"></i>
+                    <i class="fas fa-star" data-rating="2"></i>
+                    <i class="fas fa-star" data-rating="3"></i>
+                    <i class="fas fa-star" data-rating="4"></i>
+                    <i class="fas fa-star" data-rating="5"></i>
+                </div>
+            </div>
+
+            <div class="rating-section">
+                <h4>Yorumunuz</h4>
+                <textarea id="ratingComment" placeholder="Deneyiminizi paylaşın..." rows="4"></textarea>
+            </div>
+
+            <div class="rating-success" id="ratingSuccess" style="display: none;">
+                <div class="success-content">
+                    <i class="fas fa-check-circle"></i>
+                    <div class="success-text">
+                        <strong>Teşekkürler!</strong>
+                        <span>Değerlendirmeniz başarıyla gönderildi.</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+     </div>
+ </div>
+        
+

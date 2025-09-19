@@ -1,0 +1,275 @@
+@model dynamic
+@using System.Linq
+@{
+    ViewData["Title"] = "Raporlar";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-chart-line"></i> Raporlar</h2>
+    <div>
+        <button class="btn btn-admin" onclick="exportReport('pdf')">
+            <i class="fas fa-file-pdf"></i> PDF İndir
+        </button>
+        <button class="btn btn-admin" onclick="exportReport('excel')">
+            <i class="fas fa-file-excel"></i> Excel İndir
+        </button>
+    </div>
+</div>
+
+<!-- Genel İstatistikler -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stat-card primary">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-xs">Toplam Kullanıcı</div>
+                    <div class="h5">@Model.TotalUsers</div>
+                </div>
+                <i class="fas fa-users stat-icon text-primary"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card success">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-xs">Toplam İşletme</div>
+                    <div class="h5">@Model.TotalBusinesses</div>
+                </div>
+                <i class="fas fa-store stat-icon text-success"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card warning">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-xs">Toplam Randevu</div>
+                    <div class="h5">@Model.TotalAppointments</div>
+                </div>
+                <i class="fas fa-calendar-alt stat-icon text-warning"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card danger">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-xs">Toplam Yorum</div>
+                    <div class="h5">@Model.TotalReviews</div>
+                </div>
+                <i class="fas fa-star stat-icon text-danger"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Aktiflik Durumu -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="stat-card success">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-xs">Aktif Kullanıcı</div>
+                    <div class="h5">@Model.ActiveUsers</div>
+                </div>
+                <i class="fas fa-user-check stat-icon text-success"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="stat-card success">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-xs">Aktif İşletme</div>
+                    <div class="h5">@Model.ActiveBusinesses</div>
+                </div>
+                <i class="fas fa-store stat-icon text-success"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bu Ay İstatistikleri -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="stat-card warning">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-xs">Bu Ay Randevu</div>
+                    <div class="h5">@Model.MonthlyAppointments</div>
+                </div>
+                <i class="fas fa-calendar-plus stat-icon text-warning"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="stat-card warning">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-xs">Bu Ay Yorum</div>
+                    <div class="h5">@Model.MonthlyReviews</div>
+                </div>
+                <i class="fas fa-star stat-icon text-warning"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ortalama Puan -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="stat-card primary">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-xs">Ortalama Puan</div>
+                    <div class="h5">@Model.AverageRating.ToString("F1") / 5.0</div>
+                </div>
+                <i class="fas fa-chart-line stat-icon text-primary"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- En Popüler Kategoriler -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-tags"></i> En Popüler Kategoriler
+                </h5>
+            </div>
+            <div class="card-body">
+                @if (Model.TopCategories != null && Model.TopCategories.Count > 0)
+                {
+                    @foreach (var category in Model.TopCategories)
+                    {
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>@category.Name</span>
+                            <span class="badge bg-primary">@category.Count</span>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p class="text-muted">Kategori verisi bulunamadı.</p>
+                }
+            </div>
+        </div>
+    </div>
+    
+    <!-- Son Kayıtlar -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-clock"></i> Son Kayıtlar
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Son Kullanıcılar</h6>
+                        @if (Model.RecentUsers != null)
+                        {
+                            @foreach (var user in Model.RecentUsers)
+                            {
+                                <div class="d-flex align-items-center mb-1">
+                                    <img src="~/img/UserProfile.jpg" class="rounded-circle me-2" width="20" height="20" alt="User">
+                                    <small>@user.FullName</small>
+                                </div>
+                            }
+                        }
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Son İşletmeler</h6>
+                        @if (Model.RecentBusinesses != null)
+                        {
+                            @foreach (var business in Model.RecentBusinesses)
+                            {
+                                <div class="d-flex align-items-center mb-1">
+                                    <img src="@(business.ProfileImageUrl ?? "~/img/business-default.jpg")" class="rounded-circle me-2" width="20" height="20" alt="Business">
+                                    <small>@business.Name</small>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Grafik Alanı -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-bar"></i> Aylık İstatistikler
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="monthlyChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        function exportReport(format) {
+            AdminPanel.showAlert(`${format.toUpperCase()} raporu indiriliyor...`, 'info');
+            
+            fetch(`@Url.Action("Export", "Reports", new { area = "Admin" })?format=${format}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                AdminPanel.showAlert(data.message, 'info');
+            })
+            .catch(error => {
+                AdminPanel.showAlert('Rapor indirme sırasında bir hata oluştu.', 'danger');
+            });
+        }
+
+        // Aylık istatistik grafiği
+        const ctx = document.getElementById('monthlyChart').getContext('2d');
+        const monthlyChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz'],
+                datasets: [{
+                    label: 'Randevular',
+                    data: [65, 59, 80, 81, 56, 55, 40],
+                    backgroundColor: 'rgba(0, 123, 255, 0.2)',
+                    borderColor: 'rgba(0, 123, 255, 1)',
+                    borderWidth: 2,
+                    fill: true
+                }, {
+                    label: 'Yorumlar',
+                    data: [28, 48, 40, 19, 86, 27, 90],
+                    backgroundColor: 'rgba(40, 167, 69, 0.2)',
+                    borderColor: 'rgba(40, 167, 69, 1)',
+                    borderWidth: 2,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+}
+
+

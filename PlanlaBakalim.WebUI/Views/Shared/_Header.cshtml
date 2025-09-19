@@ -1,0 +1,174 @@
+﻿@using Microsoft.AspNetCore.Authentication
+@* @inject IHttpContextAccessor HttpContextAccessor *@
+@{
+    var user = Context.User;
+    var scheme = user?.Identity?.AuthenticationType; 
+    var isAuthenticated = user?.Identity?.IsAuthenticated ?? false;
+    var userName = user?.Identity?.Name;
+    var avatar = user?.Claims.FirstOrDefault(c=>c.Type=="Avatar")?.Value;
+    var userId = user?.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+}
+<header class="header">
+    <nav class="navbar">
+        <a asp-action="Index" asp-controller="Home" class="logo">
+            <i class="fas fa-calendar-check"></i>
+            <span>Planla Bakalım</span>
+        </a>
+        <div class="nav-menu" id="nav-menu">
+            <a asp-action="index" asp-controller="Home" class="nav-link">Ana Sayfa</a>
+            <a asp-action="index" asp-controller="Business" class="nav-link">İşletmeler</a>
+            <div class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggles">
+                    Kategoriler
+                    <i class="fas fa-chevron-down"></i>
+                </a>
+                <div class="dropdown-menu">
+                    @await Component.InvokeAsync("Categories", new { mode = "desktop" })
+                </div>
+            </div>
+            <a asp-action="Index" asp-controller="Contact" class="nav-link">İletişim</a>
+
+        </div>
+        <div class="navbar-right">
+              @if ( isAuthenticated && scheme == "CustomerScheme")
+            {
+                <div class="navbar-profile-menu">
+                <div class="navbar-profile-trigger">
+                    <div class="navbar-profile-avatar">
+                        <img src="@avatar" alt="@userName">
+                        <i class="fas fa-user" style="display: none;"></i>
+                    </div>
+                        <span class="navbar-profile-name">@userName</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="navbar-profile-dropdown">
+                    <div class="navbar-profile-header">
+                        <div class="navbar-profile-user-info">
+                                <img src="@avatar" alt="@userName">
+                            <div class="navbar-profile-avatar-placeholder" style="display: none;">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div>
+                               <h4>@userName</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="navbar-profile-links">
+                        <a asp-action="Index" asp-controller="Profile" class="navbar-profile-link">
+                            <i class="fas fa-user-circle"></i>
+                            Profilim
+                        </a>
+                        <div class="navbar-profile-divider"></div>
+                        <a asp-controller="Account" asp-action="Logout" class="navbar-profile-link navbar-logout-link">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Çıkış Yap
+                        </a>
+                    </div>
+                </div>
+            </div>
+            }
+            else
+            {
+            <div class="nav-actions">
+                    <a asp-area="BusinessPanel" asp-action="Login" asp-controller="Account" class="btn-business">İşletme Girişi</a>
+                <!-- Giriş yapmamış kullanıcılar için -->
+                    <a asp-action="Login" asp-controller="Account" class="btn-login">
+                    <i class="fas fa-user"></i>
+                    Giriş Yap
+                </a>
+            </div>
+            }
+        </div>
+
+        <button class="mobile-menu-btn" id="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </button>
+    </nav>
+
+</header>
+<div class="mobile-nav">
+    <div class="mobile-nav-header">
+        <div class="mobile-logo">
+            <i class="fas fa-calendar-check"></i>
+            <span>Planla Bakalım</span>
+        </div>
+        <button class="mobile-close-btn" id="mobile-close-btn">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <div class="mobile-nav-content">
+        <div class="mobile-nav-section">
+            <h3>Ana Menü</h3>
+            <a asp-action="Index" asp-controller="Home" class="mobile-nav-item">
+                <i class="fas fa-home"></i>
+                <span>Ana Sayfa</span>
+            </a>
+            <a asp-action="Index" asp-controller="Business" class="mobile-nav-item">
+                <i class="fas fa-building"></i>
+                <span>İşletmeler</span>
+            </a>
+            <a asp-action="Index" asp-controller="Contact" class="mobile-nav-item">
+                <i class="fas fa-envelope"></i>
+                <span>İletişim</span>
+            </a>
+            <a href="#about" class="mobile-nav-item">
+                <i class="fas fa-users"></i>
+                <span>Hakkımızda</span>
+            </a>
+        </div>
+        <div class="mobile-nav-section">
+            <h3>Kategoriler</h3>
+            <div class="mobile-categories">
+                @await Component.InvokeAsync("Categories", new { mode = "mobile" })
+            </div>
+        </div>
+
+        <div class="mobile-nav-section">
+            <div class="mobile-nav-buttons">
+                @if (!isAuthenticated || scheme != "CustomerScheme")
+                {
+                    <!-- Giriş yapmamış kullanıcılar için -->
+                    <a asp-area="BusinessPanel" asp-action="Login" asp-controller="Account" class="mobile-nav-item mobile-btn-primary">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>İşletme Giriş</span>
+                    </a>
+                    <a asp-action="Login" asp-controller="Account" class="mobile-nav-item mobile-btn-primary">
+                        <i class="fas fa-user"></i>
+                        <span>Giriş Yap</span>
+                    </a>
+                }
+            </div>
+
+            @if (isAuthenticated && scheme == "CustomerScheme")
+            {
+                <div class="mobile-profile-section">
+                    <h3>Profil</h3>
+                    <div class="mobile-profile-dropdown">
+                        <div class="mobile-profile-trigger" onclick="toggleMobileProfile()">
+                            <div class="mobile-profile-avatar">
+                                <img src="@avatar" alt="@userName"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <i class="fas fa-user" style="display: none;"></i>
+                            </div>
+                            <div class="mobile-profile-info">
+                                <h4>@userName</h4>
+                            </div>
+                            <i class="fas fa-chevron-down" id="mobileProfileChevron"></i>
+                        </div>
+                        <div class="mobile-profile-menu" id="mobileProfileMenu">
+                            <a asp-action="Index" asp-controller="Profile" class="mobile-profile-action">
+                                <i class="fas fa-user-circle"></i>
+                                <span>Profilim</span>
+                            </a>  
+                            <a asp-action="Logout" asp-controller="Account" class="mobile-profile-action mobile-profile-logout">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Çıkış Yap</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+    </div>
+</div>

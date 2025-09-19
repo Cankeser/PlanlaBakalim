@@ -1,0 +1,93 @@
+﻿@model Business
+@section Styles {
+    <link href="~/BusinessPanel/css/settings.css" rel="stylesheet" />
+}
+<header class="app-header">
+    <div class="header-top">
+        <div class="header-left">
+            <button class="back-btn" onclick="window.location.href='index.html'">
+                <i class="bi bi-arrow-left"></i>
+            </button>
+            <div class="header-title">
+                <h1>Ayarlar</h1>
+                <p>Uygulama ve hesap ayarları</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="icon-btn theme-btn" onclick="toggleTheme()" aria-label="Tema değiştir">
+                <i class="bi bi-moon-fill" id="theme-icon"></i>
+            </button>
+
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<main class="main-content">
+    <div class="container">
+        <!-- Profile Section -->
+        <div class="profile-section">
+            <div class="profile-card">
+                <div class="profile-avatar">
+                    <img src="@Model.ProfileImageUrl" alt="@Model.Name">
+                </div>
+                <div class="profile-info">
+                    <h2>@Model.Name</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings List -->
+        <div class="settings-list">
+            <div class="settings-group">
+                <h3>İşletme</h3>
+                <a asp-area="BusinessPanel" asp-controller="BusinessInfo" asp-action="Index"  class="setting-item">
+                    <div class="setting-icon">
+                        <i class="bi bi-building"></i>
+                    </div>
+                    <div class="setting-content">
+                        <h4>İşletme Bilgileri</h4>
+                        <p>Ad, adres ve vergi bilgileri</p>
+                    </div>
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+
+                <a href="services.html" class="setting-item">
+                    <div class="setting-icon">
+                        <i class="bi bi-clock"></i>
+                    </div>
+                    <div class="setting-content">
+                        <h4>Çalışma Saatleri</h4>
+                        <p>Haftalık çalışma programı</p>
+                    </div>
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </div>
+
+            <div class="settings-group">
+                <h3>Diğer</h3>
+                <a href="notifications.html" class="setting-item">
+                    <div class="setting-icon">
+                        <i class="bi bi-question-circle"></i>
+                    </div>
+                    <div class="setting-content">
+                        <h4>Yardım & Destek</h4>
+                        <p>Yardım alın ve destek ekibine ulaşın</p>
+                    </div>
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+
+                <a href="../index.html" class="setting-item danger">
+                    <div class="setting-icon">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </div>
+                    <div class="setting-content">
+                        <h4>Çıkış Yap</h4>
+                        <p>Hesabınızdan güvenli çıkış yapın</p>
+                    </div>
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</main>

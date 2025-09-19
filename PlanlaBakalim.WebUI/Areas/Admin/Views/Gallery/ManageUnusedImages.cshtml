@@ -1,0 +1,170 @@
+@using System.IO
+@{
+    ViewData["Title"] = "Kullanılmayan Görselleri Yönet";
+}
+
+<div class="page-header">
+    <h1 class="page-title">Kullanılmayan Görselleri Yönet</h1>
+    <p class="page-subtitle">Veritabanında kayıtlı olmayan görselleri yönetin</p>
+</div>
+
+@if (TempData["DebugInfo"] != null)
+{
+    <div class="alert alert-info">
+        <strong>Debug Bilgisi:</strong> @TempData["DebugInfo"]
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        <strong>Hata:</strong> @TempData["Error"]
+    </div>
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        <strong>Başarılı:</strong> @TempData["Success"]
+    </div>
+}
+
+<div class="row">
+    <!-- Kullanılmayan Görseller -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="fas fa-images text-warning"></i> 
+                    Kullanılmayan Görseller (@ViewBag.UnusedCount)
+                </h5>
+            </div>
+            <div class="card-body">
+                @if (ViewBag.UnusedCount > 0)
+                {
+                    <div class="row" id="unusedImages">
+                        @foreach (string imagePath in ViewBag.UnusedImages)
+                        {
+                            <div class="col-md-3 col-sm-4 col-6 mb-3">
+                                <div class="card h-100">
+                                    <img src="~/@imagePath" class="card-img-top" alt="@imagePath.Split('/').Last()" style="height: 150px; object-fit: cover;">
+                                    <div class="card-body d-flex flex-column">
+                                        <h6 class="card-title text-truncate" title="@imagePath">@imagePath.Split('/').Last()</h6>
+                                        <small class="text-muted">@imagePath</small>
+                                        <div class="mt-auto">
+                                            <button class="btn btn-success btn-sm w-100 mb-1" onclick="setAsBusinessProfile('@imagePath')">
+                                                <i class="fas fa-building"></i> İşletme Profili Yap
+                                            </button>
+                                            <button class="btn btn-danger btn-sm w-100" onclick="deleteImage('@imagePath')">
+                                                <i class="fas fa-trash"></i> Sil
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-info text-center" role="alert">
+                        <i class="fas fa-info-circle me-2"></i> Kullanılmayan görsel bulunamadı.
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Kullanılan Görseller Özeti -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="fas fa-check-circle text-success"></i> 
+                    Kullanılan Görseller (@ViewBag.UsedCount)
+                </h5>
+            </div>
+            <div class="card-body">
+                @if (ViewBag.UsedCount > 0)
+                {
+                    <div class="list-group">
+                        @foreach (string imagePath in ViewBag.UsedImages)
+                        {
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>@imagePath.Split('/').Last()</strong>
+                                    <br>
+                                    <small class="text-muted">@imagePath</small>
+                                </div>
+                                <span class="badge bg-success rounded-pill">
+                                    <i class="fas fa-check"></i>
+                                </span>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-info text-center" role="alert">
+                        <i class="fas fa-info-circle me-2"></i> Kullanılan görsel bulunamadı.
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        function setAsBusinessProfile(imagePath) {
+            const businessId = prompt('İşletme ID girin:');
+            if (businessId && !isNaN(businessId)) {
+                const formData = new FormData();
+                formData.append('imagePath', imagePath);
+                formData.append('businessId', businessId);
+                
+                fetch('@Url.Action("SetBusinessProfileImage")', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        location.reload();
+                    } else {
+                        alert('Hata: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    alert('Bir hata oluştu: ' + error);
+                });
+            }
+        }
+
+        function deleteImage(imagePath) {
+            if (confirm('Bu görseli silmek istediğinizden emin misiniz?')) {
+                fetch('@Url.Action("DeleteUnusedImage")', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ imagePath: imagePath })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Hata: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    alert('Bir hata oluştu: ' + error);
+                });
+            }
+        }
+    </script>
+}
+

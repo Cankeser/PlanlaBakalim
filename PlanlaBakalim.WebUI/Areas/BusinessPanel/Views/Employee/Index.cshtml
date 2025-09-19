@@ -1,0 +1,124 @@
+﻿@model IEnumerable<Employee>
+@section Styles{
+    <link rel="stylesheet" href="~/BusinessPanel/css/employees.css" />
+}
+<header class="app-header">
+    <div class="header-top">
+        <div class="header-left">
+            <a href="index.html" class="back-btn">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+            <div class="header-title">
+                <h1>Çalışanlarım</h1>
+                <p>İşletmenizdeki çalışanları yönetin</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <a asp-area="BusinessPanel" asp-controller="Employee" asp-action="Create"  class="add-employee-btn">
+                <i class="bi bi-person-plus"></i>
+                Yeni Çalışan
+            </a>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<main class="main-content">
+    <div class="container">
+        <!-- Employees Overview -->
+        <div class="employees-overview">
+            <div class="employees-header">
+                <div class="header-content">
+                    <h2>Çalışan Yönetimi</h2>
+                </div>
+            </div>
+        </div>
+        @if (!Model.Any() && Model.Count() == 0)
+        {
+            <div class="no-employees">
+                <i class="bi bi-people"></i>
+                <h3>Henüz çalışan eklenmemiş</h3>
+                <p>Çalışan eklemek için yukarıdaki "Yeni Çalışan" butonuna tıklayın.</p>
+            </div>
+        }
+        else
+        {
+
+            <div class="employees-grid">
+                @foreach (var employee in Model)
+                {
+                    var statusClass = employee.IsActive ? "active" : "inactive"; 
+                    var statusText = employee.IsActive ? "Aktif" : "Pasif";
+                    <div class="employee-card" data-employee-id="@employee.Id">
+                        <div class="card-inner">
+                            <!-- Front Side -->
+                            <div class="card-front">
+                                <div class="employee-avatar">
+                                    <img src="@(!string.IsNullOrWhiteSpace(employee.User.ProfileUrl) ? employee.User.ProfileUrl: "/img/userProfile.jpg")" alt="@employee.User.FullName">
+                                    <div class="status-badge online">
+                                        <i class="bi bi-circle-fill"></i>
+                                    </div>
+                                </div>
+                                <div class="employee-info">
+                                    <h4>@employee.User.FullName</h4>
+                                    <span class="employee-role">@(employee.Position ?? "Çalışan")</span>
+                                    <span class="employee-status @statusClass">@statusText</span>
+                                </div>
+                                <div class="flip-hint">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                    Detaylar için dokun
+                                </div>
+                            </div>
+
+                            <!-- Back Side -->
+                            <div class="card-back">
+                                <div class="back-header">
+                                    <h4>@employee.User.FullName</h4>
+                                    <span class="employee-status @statusClass">@statusText</span>
+                                </div>
+                                <div class="employee-details">
+                                    <div class="detail-item">
+                                        <span class="detail-label">Pozisyon:</span>
+                                        <span class="detail-value">@(employee.Position ?? "Çalışan")</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Telefon:</span>
+                                        <span class="detail-value">@employee.User.Phone</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">E-posta:</span>
+                                        <span class="detail-value">@employee.User.Email</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">İşe Giriş:</span>
+                                        <span class="detail-value">@employee.StartDate</span>
+                                    </div>
+                                    @if (!employee.IsActive)
+                                    {
+                                        <div class="detail-item">
+                                            <span class="detail-label">Çıkış Tarihi:</span>
+                                            <span class="detail-value">@employee.EndDate</span>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="employee-actions">
+                                    <a asp-area="BusinessPanel" asp-controller="Employee" asp-action="Edit" asp-route-id="@employee.Id" class="btn-edit">
+                                        <i class="bi bi-pencil"></i>
+                                        Düzenle
+                                    </a>
+                                    <a asp-area="BusinessPanel" asp-controller="Employee" asp-action="Delete" asp-route-id="@employee.Id" class="btn-delete">
+                                        <i class="bi bi-trash"></i>
+                                        Sil
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                }
+
+            </div>
+        }
+       
+    </div>
+</main>

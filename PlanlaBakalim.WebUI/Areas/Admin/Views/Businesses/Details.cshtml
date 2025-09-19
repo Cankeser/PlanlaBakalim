@@ -1,0 +1,283 @@
+@model PlanlaBakalim.Core.Entities.Business
+@{
+    ViewData["Title"] = "İşletme Detayları";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="page-title">İşletme Detayları</h1>
+                        <p class="page-subtitle">@Model.Name</p>
+                    </div>
+                    <div>
+                        <a href="@Url.Action("Index", "Businesses", new { area = "Admin" })" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Geri Dön
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- İşletme Bilgileri -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="fas fa-store me-2"></i>İşletme Bilgileri
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        @if (!string.IsNullOrEmpty(Model.ProfileImageUrl))
+                        {
+                            <img src="@Model.ProfileImageUrl" alt="İşletme" class="rounded" width="150" height="100" style="object-fit: cover;">
+                        }
+                        else
+                        {
+                            <div class="rounded bg-light d-inline-flex align-items-center justify-content-center" style="width: 150px; height: 100px;">
+                                <i class="fas fa-store fa-2x text-muted"></i>
+                            </div>
+                        }
+                    </div>
+                    
+                    <table class="table table-borderless">
+                        <tr>
+                            <td><strong>İşletme Adı:</strong></td>
+                            <td>@Model.Name</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Kategori:</strong></td>
+                            <td>
+                                <span class="badge bg-info">@Model.Category?.Name</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>E-posta:</strong></td>
+                            <td>@Model.Email</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Telefon:</strong></td>
+                            <td>@Model.PhoneNumber</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Website:</strong></td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(Model.Website))
+                                {
+                                    <a href="@Model.Website" target="_blank">@Model.Website</a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">-</span>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sahibi:</strong></td>
+                            <td>@Model.Owner?.FullName</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Durum:</strong></td>
+                            <td>
+                                @if (Model.IsActive)
+                                {
+                                    <span class="badge bg-success">Aktif</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Pasif</span>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Randevu Süresi:</strong></td>
+                            <td>@Model.AppointmentSlotDuration dakika</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Kayıt Tarihi:</strong></td>
+                            <td>@Model.CreatedDate.ToString("dd.MM.yyyy HH:mm")</td>
+                        </tr>
+                    </table>
+
+                    @if (!string.IsNullOrEmpty(Model.Description))
+                    {
+                        <div class="mt-3">
+                            <strong>Açıklama:</strong>
+                            <p class="mt-2">@Model.Description</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Adres Bilgileri -->
+            @if (Model.BusinessAddress != null)
+            {
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5 class="card-title">
+                            <i class="fas fa-map-marker-alt me-2"></i>Adres Bilgileri
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Şehir:</strong> @Model.BusinessAddress.District?.City?.Name</p>
+                        <p><strong>İlçe:</strong> @Model.BusinessAddress.District?.Name</p>
+                        <p><strong>Adres:</strong> @Model.BusinessAddress.StreetAddress</p>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Çalışanlar -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="fas fa-users me-2"></i>Çalışanlar (@Model.Employees.Count)
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.Employees.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Çalışan</th>
+                                        <th>Pozisyon</th>
+                                        <th>Başlama Tarihi</th>
+                                        <th>Durum</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var employee in Model.Employees)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="fw-bold">@employee.User?.FullName</div>
+                                                <small class="text-muted">@employee.User?.Email</small>
+                                            </td>
+                                            <td>@employee.Position</td>
+                                            <td>@employee.StartDate.ToString("dd.MM.yyyy")</td>
+                                            <td>
+                                                @if (employee.IsActive)
+                                                {
+                                                    <span class="badge bg-success">Aktif</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-danger">Pasif</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-user-slash fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">Bu işletmede henüz çalışan yok</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Hizmetler -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="fas fa-cogs me-2"></i>Hizmetler (@Model.Services.Count)
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.Services.Any())
+                    {
+                        <div class="row">
+                            @foreach (var service in Model.Services.Take(6))
+                            {
+                                <div class="col-md-6 mb-3">
+                                    <div class="card border">
+                                        <div class="card-body">
+                                            <h6 class="card-title">@service.Name</h6>
+                                            <p class="card-text text-muted">@service.Description</p>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span class="badge bg-primary">Hizmet</span>
+                                                <strong class="text-success">@service.Price.ToString("C")</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        @if (Model.Services.Count > 6)
+                        {
+                            <div class="text-center mt-3">
+                                <small class="text-muted">Toplam @Model.Services.Count hizmet - İlk 6 tanesi gösteriliyor</small>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-tools fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">Bu işletmede henüz hizmet tanımlanmamış</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Çalışma Saatleri -->
+            @if (Model.WorkingHours.Any())
+            {
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5 class="card-title">
+                            <i class="fas fa-clock me-2"></i>Çalışma Saatleri
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Gün</th>
+                                        <th>Açılış</th>
+                                        <th>Kapanış</th>
+                                        <th>Durum</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var workingHour in Model.WorkingHours.OrderBy(w => w.Day))
+                                    {
+                                        <tr>
+                                            <td>@workingHour.Day</td>
+                                            <td>@workingHour.OpenTime.ToString("c")</td>
+                                            <td>@workingHour.CloseTime.ToString("c")</td>
+                                            <td>
+                                                @if (workingHour.IsOpen)
+                                                {
+                                                    <span class="badge bg-success">Açık</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-danger">Kapalı</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

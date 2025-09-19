@@ -1,0 +1,60 @@
+﻿@model IEnumerable<BusinessWorkingHour>
+
+@section Styles {
+    <link href="~/BusinessPanel/css/workingHours.css" rel="stylesheet" />
+}
+
+<header class="app-header">
+    <div class="header-top">
+        <div class="header-left">
+            <button class="back-btn" onclick="history.back()">
+                <i class="bi bi-arrow-left"></i>
+            </button>
+            <div class="header-title">
+                <h1>Çalışma Saatleri</h1>
+                <p>İşletme çalışma programını yönetin</p>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="main-content">
+    <!-- Weekly Schedule Section -->
+    <section class="schedule-section">
+        <div class="section-header">
+            <h2>Haftalık Çalışma Saatleri</h2>
+        </div>
+
+        <div class="week-grid">
+            @foreach (var x in Model)
+            {
+                <div class="day-card @(x.IsOpen ? "active" : "")" data-id="@x.Id">
+                    <div class="day-header">
+                        <div class="day-name">@x.Day.ToString()</div>
+                        <div class="day-toggle">
+                            <label class="toggle-switch">
+                                <input type="checkbox" class="is-open" @(x.IsOpen ? "checked" : "")>
+                                <span class="toggle-slider">
+                                    <span class="toggle-text">@(x.IsOpen ? "Açık" : "Kapalı")</span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="day-time">
+                        <input type="time" value="@x.OpenTime.ToString(@"hh\:mm")" class="time-input open-time" @(x.IsOpen ? "" : "disabled")>
+                        <span class="time-separator">-</span>
+                        <input type="time" value="@x.CloseTime.ToString(@"hh\:mm")" class="time-input close-time" @(x.IsOpen ? "" : "disabled")>
+                    </div>
+
+                    <div class="day-actions" style="margin-top:10px; text-align:right;">
+                        <button type="button" class="save-day-btn btn save-btn">Kaydet</button>
+                    </div>
+                </div>
+            }
+</div>
+    </section>
+</main>
+
+@section Scripts {
+    <script src="~/BusinessPanel/js/workingHours.js"></script>
+}

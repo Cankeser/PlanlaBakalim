@@ -1,0 +1,210 @@
+@model IEnumerable<PlanlaBakalim.Core.Entities.Gallery>
+@{
+    ViewData["Title"] = "Galeri Yönetimi";
+}
+
+<div class="page-header">
+    <h1 class="page-title">Galeri Yönetimi</h1>
+    <p class="page-subtitle">Resim galerisini yönetin</p>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title">Galeri Öğeleri</h5>
+            <div class="btn-group">
+                <a href="@Url.Action("Create")" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Yeni Resim Ekle
+                </a>
+                <a href="@Url.Action("ImportFromProject")" class="btn btn-success">
+                    <i class="fas fa-download"></i> Projeden İçe Aktar
+                </a>
+                <a href="@Url.Action("ManageUnusedImages")" class="btn btn-warning">
+                    <i class="fas fa-images"></i> Kullanılmayan Görselleri Yönet
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="image-gallery">
+                @foreach (var item in Model)
+                {
+                    <div class="gallery-item">
+                        <img src="~/uploads/gallery/@item.ImageUrl" alt="@item.Title" />
+                        <div class="overlay">
+                            <div class="d-flex gap-2">
+                                <a href="@Url.Action("Details", new { id = item.Id })" class="btn btn-sm btn-info">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="@Url.Action("Edit", new { id = item.Id })" class="btn btn-sm btn-warning">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button onclick="confirmDelete('@item.Title', '@Url.Action("Delete", new { id = item.Id })')" class="btn btn-sm btn-danger">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="p-3">
+                            <h6 class="mb-1">@item.Title</h6>
+                            <p class="text-muted small mb-2">@item.Business?.Name</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge @(item.IsActive ? "badge-success" : "badge-danger")">
+                                    @(item.IsActive ? "Aktif" : "Pasif")
+                                </span>
+                                <button onclick="toggleStatus(@item.Id, @item.IsActive.ToString().ToLower(), '@Url.Action("ToggleStatus", new { id = item.Id })')" 
+                                        class="btn btn-sm @(item.IsActive ? "btn-outline-danger" : "btn-outline-success")">
+                                    <i class="fas fa-@(item.IsActive ? "times" : "check")"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-images fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">Henüz galeri öğesi yok</h5>
+                <p class="text-muted">İlk resminizi eklemek için yukarıdaki butona tıklayın.</p>
+                <a href="@Url.Action("Create")" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> İlk Resmi Ekle
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmDelete(itemName, deleteUrl) {
+            AdminPanel.confirmAction(`${itemName} silmek istediğinizden emin misiniz?`, () => {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = deleteUrl;
+                
+                const token = document.querySelector('input[name="__RequestVerificationToken"]');
+                if (token) {
+                    form.appendChild(token.cloneNode());
+                }
+                
+                document.body.appendChild(form);
+                form.submit();
+            });
+        }
+        
+        function toggleStatus(itemId, currentStatus, toggleUrl) {
+            const newStatus = !currentStatus;
+            const statusText = newStatus ? 'aktif' : 'pasif';
+            
+            AdminPanel.confirmAction(`Bu öğeyi ${statusText} yapmak istediğinizden emin misiniz?`, () => {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = toggleUrl;
+                
+                const token = document.querySelector('input[name="__RequestVerificationToken"]');
+                if (token) {
+                    form.appendChild(token.cloneNode());
+                }
+                
+                document.body.appendChild(form);
+                form.submit();
+            });
+        }
+    </script>
+}
+
+<!-- Pagination -->
+@if (ViewBag.TotalPages > 1)
+{
+    <nav aria-label="Sayfa navigasyonu" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <!-- Previous Page -->
+            @if (ViewBag.CurrentPage > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage - 1, pageSize = ViewBag.PageSize })">
+                        <i class="fas fa-chevron-left"></i> Önceki
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">
+                        <i class="fas fa-chevron-left"></i> Önceki
+                    </span>
+                </li>
+            }
+
+            <!-- Page Numbers -->
+            @{
+                int startPage = Math.Max(1, ViewBag.CurrentPage - 2);
+                int endPage = Math.Min(ViewBag.TotalPages, ViewBag.CurrentPage + 2);
+            }
+
+            @if (startPage > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { page = 1, pageSize = ViewBag.PageSize })">1</a>
+                </li>
+                @if (startPage > 2)
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                }
+            }
+
+            @for (int i = startPage; i <= endPage; i++)
+            {
+                <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { page = i, pageSize = ViewBag.PageSize })">@i</a>
+                </li>
+            }
+
+            @if (endPage < ViewBag.TotalPages)
+            {
+                @if (endPage < ViewBag.TotalPages - 1)
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                }
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.TotalPages, pageSize = ViewBag.PageSize })">@ViewBag.TotalPages</a>
+                </li>
+            }
+
+            <!-- Next Page -->
+            @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage + 1, pageSize = ViewBag.PageSize })">
+                        Sonraki <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">
+                        Sonraki <i class="fas fa-chevron-right"></i>
+                    </span>
+                </li>
+            }
+        </ul>
+    </nav>
+
+    <!-- Page Info -->
+    <div class="text-center text-muted mt-2">
+        <small>
+            Sayfa @ViewBag.CurrentPage / @ViewBag.TotalPages 
+            (Toplam @ViewBag.TotalCount kayıt)
+        </small>
+    </div>
+}
+
+

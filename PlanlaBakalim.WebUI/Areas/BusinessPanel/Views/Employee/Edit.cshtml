@@ -1,0 +1,104 @@
+﻿@using PlanlaBakalim.WebUI.Areas.BusinessPanel.Models
+@model EmployeeVM
+@section Styles {
+    <link href="~/BusinessPanel/css/employees.css" rel="stylesheet" />
+}
+<header class="app-header">
+    <div class="header-top">
+        <div class="header-left">
+            <a href="employees.html" class="back-btn">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+            <div class="header-title">
+                <h1>Çalışan Düzenleme</h1>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="main-content">
+    <div class="container">
+        <div class="form-container">
+            <form class="employee-form" method="post" asp-area="BusinessPanel" asp-controller="Employee" asp-action="Edit" enctype="multipart/form-data">
+                <input type="text" asp-for="@Model.Id" hidden>
+
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="bi bi-person"></i>
+                        Kişisel Bilgiler
+                    </h3>
+
+                    <div class="form-row">
+                        <div class="photo-section">
+                            <div class="current-photo">
+                                <img src="@(!string.IsNullOrWhiteSpace(Model.ProfileUrl) ? Model.ProfileUrl : "/img/userProfile.jpg")" alt="Profil" id="current-photo">
+                                <button type="button" class="change-photo-btn" onclick="document.getElementById('photo-input').click()">
+                                    <i class="bi bi-camera"></i>
+                                </button>
+                            </div>
+                            <input type="file" id="photo-input" asp-for="@Model.Photo" accept="image/*" style="display: none;" onchange="handlePhotoChange(event)">
+                           
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="@Model.FullName"></label>
+                            <input type="text" asp-for="@Model.FullName">
+                        </div>  
+                        
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label asp-for="@Model.Email"></label>
+                            <input type="email" asp-for="@Model.Email">
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="@Model.Phone"></label>
+                            <input type="tel" asp-for="@Model.Phone">
+                        </div> 
+                        <div class="form-group">
+                            <label asp-for="@Model.StartDate"></label>
+                            <input type="date" asp-for="@Model.StartDate">
+                        </div>     
+                        <div class="form-group">
+                            <label asp-for="@Model.Position"></label>
+                            <input type="text" asp-for="@Model.Position">
+                        </div>
+                    </div>
+                    
+                 
+                </div>
+                <div class="form-actions">
+                    <a type="button" class="btn-secondary" asp-area="BusinessPanel" asp-controller="Employee" asp-action="Index">
+                        <i class="bi bi-x"></i>
+                        İptal
+                    </a>
+                    <button type="submit" class="btn-primary">
+                        <i class="bi bi-check"></i>
+                       Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+@section Scripts {
+    <script>
+         // Profile form submission
+        document.querySelector('.profile-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+        });
+
+        // Handle photo change
+        function handlePhotoChange(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('current-photo').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+    </script>
+}

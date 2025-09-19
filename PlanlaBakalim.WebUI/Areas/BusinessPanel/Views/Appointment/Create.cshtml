@@ -1,0 +1,246 @@
+﻿@section Styles {
+    <link href="~/BusinessPanel/css/new-appointment.css" rel="stylesheet" />
+}
+<header class="app-header">
+    <div class="header-top">
+        <div class="header-left">
+            <button class="back-btn" onclick="window.location.href='appointments-v2.html'">
+                <i class="bi bi-arrow-left"></i>
+            </button>
+            <div class="header-title">
+                <h1>Hızlı Randevu</h1>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<main class="main-content">
+    <div class="container">
+        <div class="step-content active" id="step1">
+            <div class="step-header">
+                <h2>Müşteri Bilgileri</h2>
+            </div>
+
+            <div class="customer-section">
+                <div class="tab-content active" id="existing-customers">
+                    <div class="new-customer-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="newCustomerName">Müşteri Adı *</label>
+                                <input type="text" id="newCustomerName" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="newCustomerPhone">Telefon *</label>
+                                <input type="tel" id="newCustomerPhone" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="newCustomerEmail">E-posta</label>
+                                <input type="email" id="newCustomerEmail" class="form-control">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="step-actions">
+                <button class="btn btn-outline-secondary" onclick="prevStep()" disabled>
+                    <i class="bi bi-arrow-left"></i>
+                    Geri
+                </button>
+                <button class="btn btn-primary" onclick="nextStep()" id="step1Next" disabled>
+                    Devam Et
+                    <i class="bi bi-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 2: Çalışan Seçimi -->
+        <div class="step-content" id="step2">
+            <div class="step-header">
+                <h2>Çalışan Seçimi</h2>
+                <p>Randevu için çalışan seçin</p>
+            </div>
+
+            <div class="employee-selection">
+                <div class="employee-grid"> 
+                </div>
+            </div>
+
+            <div class="step-actions">
+                <button class="btn btn-outline-secondary" onclick="prevStep()">
+                    <i class="bi bi-arrow-left"></i>
+                    Geri
+                </button>
+                <button class="btn btn-primary" onclick="nextStep()" id="step2Next" disabled>
+                    Devam Et
+                    <i class="bi bi-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 3: Zaman & Hizmet -->
+        <div class="step-content" id="step3">
+            <div class="step-header">
+                <h2>Zaman & Hizmet</h2>
+                <p>Tarih, saat ve hizmet seçimi yapın</p>
+            </div>
+
+            <div class="appointment-schedule">
+                <!-- Tarih Seçimi -->
+                <div class="date-section">
+                    <h4>Tarih Seçimi</h4>
+                    <div class="date-picker">
+                        <input type="date" id="appointmentDate" class="form-control"   onchange="handleDateChange()">
+                    </div>
+                </div>
+
+                <!-- Saat Seçimi -->
+                <div class="time-section">
+                    <h4>Saat Seçimi</h4>
+                    <div class="time-slots-grid">
+                        <div class="time-slot available" data-time="08:00" onclick="selectTimeSlot(this, '08:00')">
+                            <div class="time">08:00</div>
+                            <div class="status">Müsait</div>
+                            <div class="status-dot available"></div>
+                        </div>
+                        <div class="time-slot available" data-time="09:00" onclick="selectTimeSlot(this, '09:00')">
+                            <div class="time">09:00</div>
+                            <div class="status">Müsait</div>
+                            <div class="status-dot available"></div>
+                        </div>
+                        <div class="time-slot occupied" data-time="10:00">
+                            <div class="time">10:00</div>
+                            <div class="status">Dolu</div>
+                            <div class="status-dot occupied"></div>
+                        </div>
+                        <div class="time-slot available" data-time="11:00" onclick="selectTimeSlot(this, '11:00')">
+                            <div class="time">11:00</div>
+                            <div class="status">Müsait</div>
+                            <div class="status-dot available"></div>
+                        </div>
+                        <div class="time-slot available" data-time="12:00" onclick="selectTimeSlot(this, '12:00')">
+                            <div class="time">12:00</div>
+                            <div class="status">Müsait</div>
+                            <div class="status-dot available"></div>
+                        </div>
+                        <div class="time-slot available" data-time="13:00" onclick="selectTimeSlot(this, '13:00')">
+                            <div class="time">13:00</div>
+                            <div class="status">Müsait</div>
+                            <div class="status-dot available"></div>
+                        </div>
+                        <div class="time-slot occupied" data-time="14:00">
+                            <div class="time">14:00</div>
+                            <div class="status">Dolu</div>
+                            <div class="status-dot occupied"></div>
+                        </div>
+                        <div class="time-slot available" data-time="15:00" onclick="selectTimeSlot(this, '15:00')">
+                            <div class="time">15:00</div>
+                            <div class="status">Müsait</div>
+                            <div class="status-dot available"></div>
+                        </div>
+                        <div class="time-slot occupied" data-time="16:00">
+                            <div class="time">16:00</div>
+                            <div class="status">Dolu</div>
+                            <div class="status-dot occupied"></div>
+                        </div>
+                        <div class="time-slot available" data-time="17:00" onclick="selectTimeSlot(this, '17:00')">
+                            <div class="time">17:00</div>
+                            <div class="status">Müsait</div>
+                            <div class="status-dot available"></div>
+                        </div>
+                        <div class="time-slot available" data-time="18:00" onclick="selectTimeSlot(this, '18:00')">
+                            <div class="time">18:00</div>
+                            <div class="status">Müsait</div>
+                            <div class="status-dot available"></div>
+                        </div>
+                        <div class="time-slot available" data-time="19:00" onclick="selectTimeSlot(this, '19:00')">
+                            <div class="time">19:00</div>
+                            <div class="status">Müsait</div>
+                            <div class="status-dot available"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hizmet Seçimi -->
+                <div class="service-section">
+                    <h4>Hizmet Seçimi</h4>
+                    <div class="services-list">
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-actions">
+                <button class="btn btn-outline-secondary" onclick="prevStep()">
+                    <i class="bi bi-arrow-left"></i>
+                    Geri
+                </button>
+                <button class="btn btn-primary" onclick="nextStep()" id="step3Next" disabled>
+                    Devam Et
+                    <i class="bi bi-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 4: Onay & Oluştur -->
+        <div class="step-content" id="step4">
+            <div class="step-header">
+                <h2>Onay & Oluştur</h2>
+                <p>Randevu bilgilerini kontrol edin ve oluşturun</p>
+            </div>
+
+            <div class="confirmation-card">
+                <div class="confirmation-header">
+                    <h4>Randevu Özeti</h4>
+                </div>
+
+                <div class="confirmation-details">
+                    <div class="detail-row">
+                        <span class="label">Müşteri:</span>
+                        <span class="value" id="confirmCustomer">-</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Çalışan:</span>
+                        <span class="value" id="confirmEmployee">-</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Tarih & Saat:</span>
+                        <span class="value" id="confirmDateTime">-</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Hizmetler:</span>
+                        <span class="value" id="confirmServices">-</span>
+                    </div>
+                    <div class="detail-row total">
+                        <span class="label">Toplam:</span>
+                        <span class="value" id="confirmTotal">₺0</span>
+                    </div>
+                </div>
+
+                <div class="additional-options">
+                    <div class="form-group">
+                        <label for="appointmentNotes">Notlar</label>
+                        <textarea id="appointmentNotes" class="form-control" rows="2" placeholder="Özel notlar..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-actions">
+                <button class="btn btn-secondary" onclick="prevStep()">
+                    <i class="bi bi-arrow-left"></i>
+                    Geri
+                </button>
+                <button class="btn btn-success" onclick="createAppointment()" id="createBtn">
+                    <i class="bi bi-check-lg"></i>
+                    Randevu Oluştur
+                </button>
+            </div>
+        </div>
+    </div>
+</main>
+
+@section Scripts {
+    <script src="~/BusinessPanel/js/new-appointment.js"></script>
+}

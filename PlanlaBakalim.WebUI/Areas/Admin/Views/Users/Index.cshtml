@@ -1,0 +1,303 @@
+@model IEnumerable<PlanlaBakalim.Core.Entities.User>
+@{
+    ViewData["Title"] = "Kullanıcı Yönetimi";
+}
+
+@Html.AntiForgeryToken()
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-users"></i> Kullanıcı Yönetimi</h2>
+    <div>
+        <a href="@Url.Action("Create")" class="btn btn-primary">
+            <i class="fas fa-user-plus"></i> Yeni Kullanıcı
+        </a>
+    </div>
+</div>
+
+<!-- İstatistik Kartları -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stat-card primary">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-xs">Toplam Kullanıcı</div>
+                    <div class="h5">@Model.Count()</div>
+                </div>
+                <i class="fas fa-users stat-icon text-primary"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card success">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-xs">Aktif Kullanıcı</div>
+                    <div class="h5">@Model.Count(u => u.IsActive)</div>
+                </div>
+                <i class="fas fa-user-check stat-icon text-success"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card warning">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-xs">Randevu Sahibi</div>
+                    <div class="h5">@Model.Count(u => u.Appointments.Any())</div>
+                </div>
+                <i class="fas fa-store stat-icon text-warning"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card danger">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-xs">Bu Ay Kayıt</div>
+                    <div class="h5">@Model.Count(u => u.CreatedDate.Month == DateTime.Now.Month)</div>
+                </div>
+                <i class="fas fa-user-plus stat-icon text-danger"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Kullanıcı Listesi -->
+<div class="card">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-list"></i> Kullanıcı Listesi
+            </h5>
+            <a href="@Url.Action("Create", "Users", new { area = "Admin" })" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Yeni Kullanıcı
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-admin">
+                <thead>
+                    <tr>
+                        <th>Kullanıcı</th>
+                        <th>E-posta</th>
+                        <th>Telefon</th>
+                        <th>Kayıt Tarihi</th>
+                        <th>İşletme Sayısı</th>
+                        <th>Durum</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="~/img/UserProfile.jpg" class="rounded-circle me-2" width="40" height="40" alt="User">
+                                    <div>
+                                        <div class="fw-bold">@user.FullName</div>
+                                        <small class="text-muted">ID: @user.Id</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>@user.Email</td>
+                            <td>@user.Phone</td>
+                            <td>@user.CreatedDate.ToString("dd.MM.yyyy")</td>
+                            <td>
+                                <span class="badge bg-info">@user.Appointments.Count</span>
+                            </td>
+                            <td>
+                                @if (user.IsActive)
+                                {
+                                    <span class="badge bg-success">Aktif</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Pasif</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="@Url.Action("Details", "Users", new { area = "Admin", id = user.Id })" 
+                                       class="btn btn-sm btn-outline-primary" title="Detaylar">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="@Url.Action("Edit", "Users", new { area = "Admin", id = user.Id })" 
+                                       class="btn btn-sm btn-outline-info" title="Düzenle">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button class="btn btn-sm btn-outline-@(user.IsActive ? "warning" : "success")" 
+                                            onclick="toggleUserStatus(@user.Id, @user.IsActive.ToString().ToLower())" 
+                                            title="@(user.IsActive ? "Pasifleştir" : "Aktifleştir")">
+                                        <i class="fas fa-@(user.IsActive ? "ban" : "check")"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" 
+                                            onclick="deleteUser(@user.Id)" 
+                                            title="Sil">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleUserStatus(userId, isActive) {
+            const action = isActive ? 'pasifleştir' : 'aktifleştir';
+            const message = `Bu kullanıcıyı ${action}mak istediğinizden emin misiniz?`;
+            
+            if (confirm(message)) {
+                // Get CSRF token
+                const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+                
+                fetch(`@Url.Action("ToggleStatus", "Users", new { area = "Admin" })/${userId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'RequestVerificationToken': token || ''
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        AdminPanel.showAlert(data.message, 'success');
+                        location.reload();
+                    } else {
+                        AdminPanel.showAlert(data.message || 'İşlem sırasında bir hata oluştu.', 'danger');
+                    }
+                })
+                .catch(error => {
+                    AdminPanel.showAlert('İşlem sırasında bir hata oluştu.', 'danger');
+                });
+            }
+        }
+
+        function deleteUser(userId) {
+            if (confirm('Bu kullanıcıyı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.')) {
+                // Get CSRF token
+                const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+                
+                fetch(`@Url.Action("Delete", "Users", new { area = "Admin" })/${userId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'RequestVerificationToken': token || ''
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        AdminPanel.showAlert(data.message, 'success');
+                        location.reload();
+                    } else {
+                        AdminPanel.showAlert(data.message || 'Kullanıcı silinirken bir hata oluştu.', 'danger');
+                    }
+                })
+                .catch(error => {
+                    AdminPanel.showAlert('Kullanıcı silinirken bir hata oluştu.', 'danger');
+                });
+            }
+        }
+    </script>
+}
+
+<!-- Pagination -->
+@if (ViewBag.TotalPages > 1)
+{
+    <nav aria-label="Sayfa navigasyonu" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <!-- Previous Page -->
+            @if (ViewBag.CurrentPage > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage - 1, pageSize = ViewBag.PageSize })">
+                        <i class="fas fa-chevron-left"></i> Önceki
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">
+                        <i class="fas fa-chevron-left"></i> Önceki
+                    </span>
+                </li>
+            }
+
+            <!-- Page Numbers -->
+            @{
+                int startPage = Math.Max(1, ViewBag.CurrentPage - 2);
+                int endPage = Math.Min(ViewBag.TotalPages, ViewBag.CurrentPage + 2);
+            }
+
+            @if (startPage > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { page = 1, pageSize = ViewBag.PageSize })">1</a>
+                </li>
+                @if (startPage > 2)
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                }
+            }
+
+            @for (int i = startPage; i <= endPage; i++)
+            {
+                <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { page = i, pageSize = ViewBag.PageSize })">@i</a>
+                </li>
+            }
+
+            @if (endPage < ViewBag.TotalPages)
+            {
+                @if (endPage < ViewBag.TotalPages - 1)
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                }
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.TotalPages, pageSize = ViewBag.PageSize })">@ViewBag.TotalPages</a>
+                </li>
+            }
+
+            <!-- Next Page -->
+            @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage + 1, pageSize = ViewBag.PageSize })">
+                        Sonraki <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">
+                        Sonraki <i class="fas fa-chevron-right"></i>
+                    </span>
+                </li>
+            }
+        </ul>
+    </nav>
+
+    <!-- Page Info -->
+    <div class="text-center text-muted mt-2">
+        <small>
+            Sayfa @ViewBag.CurrentPage / @ViewBag.TotalPages 
+            (Toplam @ViewBag.TotalCount kayıt)
+        </small>
+    </div>
+}
+

@@ -1,0 +1,192 @@
+﻿@model IEnumerable<BusinessService>
+@section Styles {
+    <link href="~/BusinessPanel/css/services.css" rel="stylesheet" />
+}
+<header class="app-header">
+    <div class="header-top">
+        <div class="header-left">
+            <button class="back-btn" onclick="window.location.href='index.html'">
+                <i class="bi bi-arrow-left"></i>
+            </button>
+            <div class="header-title">
+                <h1>Hizmetler</h1>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="add-service-btn" onclick="showAddModal()">
+                <i class="bi bi-plus-lg"></i>
+            </button>
+        </div>
+    </div>
+</header>
+<!-- Main Content -->
+<main class="main-content">
+    <div class="container">
+      
+       @if(!Model.Any())
+        {
+            <div class="no-services">
+                <i class="bi bi-slash-circle"></i>
+                <h3>Henüz hizmet eklenmemiş</h3>
+                <p>Hizmet eklemek için yukarıdaki "+" butonuna tıklayın.</p>
+            </div>
+        }
+      <style>
+            .no-services {
+                text-align: center;
+                padding: 40px;
+                color: #888;
+            }
+
+                .no-services i {
+                    font-size: 50px;
+                    margin-bottom: 20px;
+                }
+
+                .no-services h3 {
+                    margin-bottom: 10px;
+                }
+
+                .no-services p {
+                    font-size: 14px;
+                }
+
+      </style>
+        <div class="services-grid">
+           @foreach (var service in Model)
+            {
+                var statusClass = service.IsActive ? "active" : "inactive";
+                var statusText = service.IsActive ? "Aktif" : "Pasif";
+                <div class="service-card">
+                    <div class="service-header">
+                        <h4>@service.Name</h4>
+                        <span class="service-status @statusClass">@statusText</span>
+                    </div>
+                    <div class="service-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Fiyat</span>
+                            <span class="detail-value">@service.Price ₺</span>
+                        </div>
+
+                    </div>
+                    <div class="service-actions">
+                        <button class="action-btn edit" onclick="editService(@service.Id)">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <form method="post" asp-area="BusinessPanel" asp-controller="Services" asp-action="Delete" style="display:inline;">
+                            <input type="hidden" name="id" value="@service.Id" />
+                            <button type="submit" class="action-btn delete">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                      
+                    </div>
+                </div>
+            }
+        
+            @Html.AntiForgeryToken()
+        </div>
+    </div>
+</main>
+
+<!-- Add Service Modal -->
+<div class="modal" id="addServiceModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Yeni Hizmet Ekle</h3>
+            <button class="close-btn" onclick="hideAddModal()">
+                <i class="bi bi-x"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form id="addServiceForm">
+                <div class="form-group">
+                    <label for="serviceName">Hizmet Adı</label>
+                    <input type="text" id="serviceName" name="serviceName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="serviceDescription">Açıklama</label>
+                    <textarea id="serviceDescription" name="serviceDescription" rows="3"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="servicePrice">Fiyat (₺)</label>
+                        <input type="number" id="servicePrice" name="servicePrice" min="0" step="0.01" required>
+                    </div>
+                </div>  
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="hideAddModal()">İptal</button>
+            <button type="button" class="btn btn-primary" onclick="addService()">Hizmet Ekle</button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Service Modal -->
+<div class="modal" id="editServiceModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Hizmet Düzenle</h3>
+            <button class="close-btn" onclick="hideEditModal()">
+                <i class="bi bi-x"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form id="editServiceForm">
+                <input type="hidden" id="editServiceId" name="serviceId">
+                <div class="form-group">
+                    <label for="editServiceName">Hizmet Adı</label>
+                    <input type="text" id="editServiceName" name="serviceName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="editServiceDescription">Açıklama</label>
+                    <textarea id="editServiceDescription" name="serviceDescription" rows="3"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editServicePrice">Fiyat (₺)</label>
+                        <input type="number" id="editServicePrice" name="servicePrice" min="0" step="0.01" required>
+                    </div>
+ 
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="editServiceActive" name="serviceActive">
+                        Hizmet Aktif
+                    </label>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="hideEditModal()">İptal</button>
+            <button type="button" class="btn btn-primary" onclick="updateService()">Güncelle</button>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="~/BusinessPanel/js/services.js"></script>
+    <script>
+        @if (TempData["ToastMessage"] != null)
+        {
+                    <text>
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: '@TempData["ToastMessage"]',
+                        showConfirmButton: false,
+                        timer: 2200,
+                        timerProgressBar: true
+                    });
+                    </text>
+        }
+    </script>
+}

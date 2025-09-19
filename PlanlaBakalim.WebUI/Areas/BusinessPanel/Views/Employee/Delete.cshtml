@@ -1,0 +1,61 @@
+﻿@model Employee
+@section Styles {
+    <link href="~/BusinessPanel/css/employees.css" rel="stylesheet" />
+}
+<header class="app-header">
+    <div class="header-top">
+        <div class="header-left">
+            <a href="employees.html" class="back-btn">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+            <div class="header-title">
+                <h1>Çalışan Silme Onayı</h1>
+                <p>Çalışanı silmek için onay verin</p>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<main class="main-content">
+    <div class="container">
+        <div class="delete-confirmation-container">
+            <div class="delete-card">
+                <div class="warning-icon-large">
+                    <i class="bi bi-exclamation-triangle"></i>
+                </div>
+
+                <h2 class="delete-title">Çalışan Silme Onayı</h2>
+
+                <div class="employee-info-display">
+                    <div class="employee-avatar-large">
+                        <img src="@(!string.IsNullOrWhiteSpace(Model.User.ProfileUrl) ? Model.User.ProfileUrl : "/img/userProfile.jpg")" alt="@Model.User.FullName" id="employeeAvatar">
+                    </div>
+                    <div class="employee-details-large">
+                        <h3 id="employeeName">@Model.User.FullName</h3>
+                    </div>
+                </div>
+
+                <div class="warning-message">
+                    <p><strong>Dikkat!</strong> Bu işlem geri alınamaz.</p>
+                </div>
+
+                <div class="confirmation-actions">
+                    <form asp-action="Delete" asp-controller="Employee" asp-area="BusinessPanel" method="post">
+                        <input type="hidden" name="id" value="@Model.Id" />
+
+                        <a asp-action="Index" asp-controller="Employee" asp-area="BusinessPanel" class="btn-secondary">
+                            <i class="bi bi-x"></i>
+                            İptal Et
+                        </a>
+                        <button type="submit" class="btn-danger">
+                            <i class="bi bi-trash"></i>
+                            Evet, Çalışanı Sil
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

@@ -1,0 +1,317 @@
+@model IEnumerable<PlanlaBakalim.Core.Entities.Review>
+@{
+    ViewData["Title"] = "Yorum Yönetimi";
+}
+
+@Html.AntiForgeryToken()
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-star"></i> Yorum Yönetimi</h2>
+    <div>
+        <button class="btn btn-admin" data-bs-toggle="modal" data-bs-target="#addReviewModal">
+            <i class="fas fa-plus"></i> Yeni Yorum
+        </button>
+    </div>
+</div>
+
+<!-- İstatistik Kartları -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stat-card primary">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-xs">Toplam Yorum</div>
+                    <div class="h5">@Model.Count()</div>
+                </div>
+                <i class="fas fa-star stat-icon text-primary"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card success">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-xs">Görünür Yorum</div>
+                    <div class="h5">@Model.Count(r => r.IsVisibleOnProfile)</div>
+                </div>
+                <i class="fas fa-check-circle stat-icon text-success"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card warning">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-xs">Ortalama Puan</div>
+                    <div class="h5">@(Model.Any() ? Model.Average(r => r.Rating).ToString("F1") : "0.0")</div>
+                </div>
+                <i class="fas fa-chart-line stat-icon text-warning"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card danger">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-xs">Bu Ay Yorum</div>
+                    <div class="h5">@Model.Count(r => r.CreatedDate.Month == DateTime.Now.Month)</div>
+                </div>
+                <i class="fas fa-calendar-plus stat-icon text-danger"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Yorum Listesi -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">
+            <i class="fas fa-list"></i> Yorum Listesi
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-admin">
+                <thead>
+                    <tr>
+                        <th>Müşteri</th>
+                        <th>İşletme</th>
+                        <th>Puan</th>
+                        <th>Yorum</th>
+                        <th>Tarih</th>
+                        <th>Durum</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var review in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="~/img/UserProfile.jpg" class="rounded-circle me-2" width="40" height="40" alt="User">
+                                    <div>
+                                        <div class="fw-bold">@review.User?.FullName</div>
+                                        <small class="text-muted">@review.User?.Email</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <div class="fw-bold">@review.Business?.Name</div>
+                                    <small class="text-muted">@review.Business?.Category?.Name</small>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= review.Rating)
+                                        {
+                                            <i class="fas fa-star text-warning"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="far fa-star text-muted"></i>
+                                        }
+                                    }
+                                    <span class="ms-2 fw-bold">@review.Rating</span>
+                                </div>
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(review.Comment))
+                                {
+                                    <span class="text-truncate d-inline-block" style="max-width: 200px;" title="@review.Comment">
+                                        @review.Comment
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Yorum yok</span>
+                                }
+                            </td>
+                            <td>@review.CreatedDate.ToString("dd.MM.yyyy HH:mm")</td>
+                            <td>
+                                @if (review.IsVisibleOnProfile)
+                                {
+                                    <span class="badge bg-success">Görünür</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Gizli</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="@Url.Action("Details", "Reviews", new { area = "Admin", id = review.Id })" 
+                                       class="btn btn-sm btn-outline-primary" title="Detaylar">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <button class="btn btn-sm btn-outline-@(review.IsVisibleOnProfile ? "warning" : "success")" 
+                                            onclick="toggleReviewVisibility(@review.Id, @review.IsVisibleOnProfile.ToString().ToLower())" 
+                                            title="@(review.IsVisibleOnProfile ? "Gizle" : "Göster")">
+                                        <i class="fas fa-@(review.IsVisibleOnProfile ? "eye-slash" : "eye")"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" 
+                                            onclick="deleteReview(@review.Id)" 
+                                            title="Sil">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleReviewVisibility(reviewId, isVisible) {
+            const action = isVisible ? 'gizlemek' : 'göstermek';
+            const message = `Bu yorumu ${action} istediğinizden emin misiniz?`;
+            
+            if (confirm(message)) {
+                fetch(`@Url.Action("ToggleVisibility", "Reviews", new { area = "Admin" })/${reviewId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        AdminPanel.showAlert('İşlem sırasında bir hata oluştu.', 'danger');
+                    }
+                })
+                .catch(error => {
+                    AdminPanel.showAlert('İşlem sırasında bir hata oluştu.', 'danger');
+                });
+            }
+        }
+
+        function deleteReview(reviewId) {
+            const message = 'Bu yorumu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!';
+            
+            if (confirm(message)) {
+                fetch(`@Url.Action("Delete", "Reviews", new { area = "Admin" })/${reviewId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        AdminPanel.showAlert('İşlem sırasında bir hata oluştu.', 'danger');
+                    }
+                })
+                .catch(error => {
+                    AdminPanel.showAlert('İşlem sırasında bir hata oluştu.', 'danger');
+                });
+            }
+        }
+    </script>
+}
+
+<!-- Pagination -->
+@if (ViewBag.TotalPages > 1)
+{
+    <nav aria-label="Sayfa navigasyonu" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <!-- Previous Page -->
+            @if (ViewBag.CurrentPage > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage - 1, pageSize = ViewBag.PageSize })">
+                        <i class="fas fa-chevron-left"></i> Önceki
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">
+                        <i class="fas fa-chevron-left"></i> Önceki
+                    </span>
+                </li>
+            }
+
+            <!-- Page Numbers -->
+            @{
+                int startPage = Math.Max(1, ViewBag.CurrentPage - 2);
+                int endPage = Math.Min(ViewBag.TotalPages, ViewBag.CurrentPage + 2);
+            }
+
+            @if (startPage > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { page = 1, pageSize = ViewBag.PageSize })">1</a>
+                </li>
+                @if (startPage > 2)
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                }
+            }
+
+            @for (int i = startPage; i <= endPage; i++)
+            {
+                <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { page = i, pageSize = ViewBag.PageSize })">@i</a>
+                </li>
+            }
+
+            @if (endPage < ViewBag.TotalPages)
+            {
+                @if (endPage < ViewBag.TotalPages - 1)
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                }
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.TotalPages, pageSize = ViewBag.PageSize })">@ViewBag.TotalPages</a>
+                </li>
+            }
+
+            <!-- Next Page -->
+            @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage + 1, pageSize = ViewBag.PageSize })">
+                        Sonraki <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">
+                        Sonraki <i class="fas fa-chevron-right"></i>
+                    </span>
+                </li>
+            }
+        </ul>
+    </nav>
+
+    <!-- Page Info -->
+    <div class="text-center text-muted mt-2">
+        <small>
+            Sayfa @ViewBag.CurrentPage / @ViewBag.TotalPages 
+            (Toplam @ViewBag.TotalCount kayıt)
+        </small>
+    </div>
+}
+

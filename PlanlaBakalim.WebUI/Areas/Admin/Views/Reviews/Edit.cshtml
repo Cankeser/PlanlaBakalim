@@ -1,0 +1,178 @@
+@model PlanlaBakalim.Core.Entities.Review
+@{
+    ViewData["Title"] = "Yorum Düzenle";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-edit"></i> Yorum Düzenle</h2>
+    <a href="@Url.Action("Index", "Reviews", new { area = "Admin" })" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Geri Dön
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-star"></i> Yorum Bilgileri
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="post" action="@Url.Action("Edit", "Reviews", new { area = "Admin", id = Model.Id })">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="UserId" class="form-label">Kullanıcı <span class="text-danger">*</span></label>
+                                <select class="form-select" id="UserId" name="UserId" required>
+                                    <option value="">Kullanıcı Seçin</option>
+                                    @if (ViewBag.Users != null)
+                                    {
+                                        @foreach (var user in ViewBag.Users)
+                                        {
+                                            <option value="@user.Id" selected="@(user.Id == Model.UserId)">@user.FullName (@user.Email)</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="BusinessId" class="form-label">İşletme <span class="text-danger">*</span></label>
+                                <select class="form-select" id="BusinessId" name="BusinessId" required>
+                                    <option value="">İşletme Seçin</option>
+                                    @if (ViewBag.Businesses != null)
+                                    {
+                                        @foreach (var business in ViewBag.Businesses)
+                                        {
+                                            <option value="@business.Id" selected="@(business.Id == Model.BusinessId)">@business.Name</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="Rating" class="form-label">Puan <span class="text-danger">*</span></label>
+                        <select class="form-select" id="Rating" name="Rating" required>
+                            <option value="">Puan Seçin</option>
+                            <option value="1" selected="@(Model.Rating == 1)">1 Yıldız</option>
+                            <option value="2" selected="@(Model.Rating == 2)">2 Yıldız</option>
+                            <option value="3" selected="@(Model.Rating == 3)">3 Yıldız</option>
+                            <option value="4" selected="@(Model.Rating == 4)">4 Yıldız</option>
+                            <option value="5" selected="@(Model.Rating == 5)">5 Yıldız</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="Comment" class="form-label">Yorum</label>
+                        <textarea class="form-control" id="Comment" name="Comment" rows="4">@Model.Comment</textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="IsVisibleOnProfile" name="IsVisibleOnProfile" @(Model.IsVisibleOnProfile ? "checked" : "")>
+                            <label class="form-check-label" for="IsVisibleOnProfile">
+                                Profilde Görünür
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-admin">
+                            <i class="fas fa-save"></i> Güncelle
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-info-circle"></i> Yorum Bilgileri
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <strong>ID:</strong> @Model.Id
+                </div>
+                <div class="mb-3">
+                    <strong>Kullanıcı:</strong> @Model.User?.FullName
+                </div>
+                <div class="mb-3">
+                    <strong>İşletme:</strong> @Model.Business?.Name
+                </div>
+                <div class="mb-3">
+                    <strong>Puan:</strong> 
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        if (i <= Model.Rating)
+                        {
+                            <i class="fas fa-star text-warning"></i>
+                        }
+                        else
+                        {
+                            <i class="far fa-star text-muted"></i>
+                        }
+                    }
+                    (@Model.Rating/5)
+                </div>
+                <div class="mb-3">
+                    <strong>Oluşturulma Tarihi:</strong> @Model.CreatedDate.ToString("dd.MM.yyyy HH:mm")
+                </div>
+                <div class="mb-3">
+                    <strong>Durum:</strong> 
+                    @if (Model.IsVisibleOnProfile)
+                    {
+                        <span class="badge bg-success">Görünür</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Gizli</span>
+                    }
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-exclamation-triangle"></i> Dikkat
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <h6>Önemli Notlar:</h6>
+                    <ul class="mb-0">
+                        <li>Yorum düzenleme işlemi geri alınamaz</li>
+                        <li>Puan değişikliği işletme ortalamasını etkiler</li>
+                        <li>Görünürlük değişikliği anında etkili olur</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Form validation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const userId = document.getElementById('UserId').value;
+            const businessId = document.getElementById('BusinessId').value;
+            const rating = document.getElementById('Rating').value;
+            
+            if (!userId || !businessId || !rating) {
+                e.preventDefault();
+                AdminPanel.showAlert('Kullanıcı, işletme ve puan seçimi gereklidir.', 'danger');
+                return false;
+            }
+        });
+    </script>
+}
+
+

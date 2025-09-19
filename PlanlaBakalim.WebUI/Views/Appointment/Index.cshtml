@@ -1,0 +1,276 @@
+﻿@model Business
+
+<div class="appointment-business-info-banner">
+    <div class="container">
+        <div class="appointment-business-info-content">
+            <input type="hidden" id="business-id" name="businessId" value="@Model.Id" required>
+            <div class="appointment-business-avatar">
+                <img src="@Model.ProfileImageUrl" alt="@Model.Name">
+            </div>
+            <div class="appointment-business-details">
+                <h3>@Model.Name</h3>
+            </div>
+            <div class="appointment-business-actions">
+                <a asp-controller="Business" asp-action="BusinessDetail" asp-route-name="@UrlConverter.ConvertToUrl(Model.Name)" asp-route-id="@Model.Id" class="btn btn-outline-primary btn-sm">
+                    <i class="fas fa-eye"></i> Detayları Gör
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="appointment-container">
+    <div class="appointment-main">
+        <!-- Stepper -->
+        <div class="appointment-stepper">
+            <div class="appointment-step active" data-step="0">
+                <div class="appointment-circle"><i class="fa-solid fa-wrench"></i></div>
+                <span>Hizmet</span>
+            </div>
+            <div class="appointment-step" data-step="1">
+                <div class="appointment-circle"><i class="fa-solid fa-user-tie"></i></div>
+                <span>Personel</span>
+            </div>
+            <div class="appointment-step" data-step="2">
+                <div class="appointment-circle"><i class="fa-solid fa-calendar-days"></i></div>
+                <span>Tarih</span>
+            </div>
+            <div class="appointment-step" data-step="3">
+                <div class="appointment-circle"><i class="fa-solid fa-id-card"></i></div>
+                <span>Bilgiler</span>
+            </div>
+            <div class="appointment-step" data-step="4">
+                <div class="appointment-circle"><i class="fa-solid fa-check"></i></div>
+                <span>Onay</span>
+            </div>
+        </div>
+
+        <!-- Step Sections -->
+        <!-- 1. Adım: Hizmet -->
+        <section class="appointment-step-section active" id="appointment-step-0">
+            <div class="appointment-step-header">
+                <h2><i class="fa-solid fa-wrench"></i> Hizmet Seçimi</h2>
+                <p>İhtiyacınız olan hizmetleri seçin</p>
+            </div>
+            <div id="services-container" class="appointment-service-grid">
+                <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Hizmetler yükleniyor...</div>
+            </div>
+            <div id="new-service-error" class="new-form-error" style="display:none;"></div>
+            <div class="appointment-button-group">
+                <button class="btn btn-primary" id="new-to-step-1">
+                    <span>İleri</span> <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- 2. Adım: Personel -->
+        <section class="appointment-step-section" id="appointment-step-1">
+            <div class="appointment-step-header">
+                <h2><i class="fa-solid fa-user-tie"></i> Personel Seçimi</h2>
+                <p>Tercih ettiğiniz uzmanı seçin</p>
+            </div>
+            <div id="employees-container" class="appointment-employee-grid">
+                <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Personeller yükleniyor...</div>
+            </div>
+            <div id="new-employee-error" class="new-form-error" style="display:none;"></div>
+            <div class="appointment-button-group">
+                <button class="btn btn-secondary" id="new-back-to-step-0"><i class="fas fa-arrow-left"></i> Geri</button>
+                <button class="btn btn-primary" id="new-to-step-2"><span>İleri</span> <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </section>
+
+        <!-- 3. Adım: Tarih & Saat -->
+        <section class="appointment-step-section" id="appointment-step-2">
+            <div class="appointment-step-header">
+                <h2><i class="fa-solid fa-calendar-days"></i> Tarih & Saat</h2>
+                <p>Randevu tarihini ve saatini seçin</p>
+            </div>
+            <div class="appointment-calendar-container">
+                <div class="appointment-calendar-section">
+                    <h4><i class="fa-regular fa-calendar"></i> Tarih Seçin</h4>
+                    <div class="appointment-week-header">
+                        <button id="new-week-prev" class="appointment-week-nav"><i class="fas fa-chevron-left"></i></button>
+                        <div class="appointment-week-info">
+                            <span id="new-week-title">Bu Hafta</span>
+                            <span id="new-week-date">15-21 Aralık 2024</span>
+                        </div>
+                        <button id="new-week-next" class="appointment-week-nav"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <div class="appointment-week-days">
+                        @for (int i = 0; i < 7; i++)
+                        {
+                            <div class="appointment-week-day">
+                                <div class="appointment-day-name"></div>
+                                <div class="appointment-day-number"></div>
+                                <div class="appointment-day-month"></div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="appointment-calendar-divider"></div>
+                <div class="appointment-calendar-section">
+                    <h4><i class="fa-regular fa-clock"></i> Saat Seçin</h4>
+                    <div id="new-time-grid" class="appointment-time-grid">
+                        <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Önce tarih seçin</div>
+                    </div>
+                    <input type="hidden" id="new-appointment-time" name="appointmentTime" required />
+                    <input type="hidden" id="new-appointment-date" name="appointmentDate" required />
+                    <input type="hidden" id="selected-services-hidden" name="selectedServices" required />
+                    <input type="hidden" id="selected-employee-id" name="selectedEmployeeId" required />
+                    <input type="hidden" id="appointment-date-hidden" name="appointmentDateHidden" required />
+                    <input type="hidden" id="user-id" value="@(User?.Identity?.IsAuthenticated == true ? (User.FindFirst("Id")?.Value ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "") : "")" /> <!-- Kullanıcı giriş yaptıysa Id gönder -->
+                    <input type="hidden" id="is-authenticated" value="@(User?.Identity?.IsAuthenticated == true ? "true" : "false")" />
+                </div>
+            </div>
+            <div id="new-calendar-error" class="new-form-error" style="display:none;"></div>
+            <div class="appointment-button-group">
+                <button class="btn btn-secondary" id="new-back-to-step-1"><i class="fas fa-arrow-left"></i> Geri</button>
+                <button class="btn btn-primary" id="new-to-step-3"><span>İleri</span> <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </section>
+
+        <!-- 4. Adım: Bilgiler -->
+        <section class="appointment-step-section" id="appointment-step-3">
+            <div class="appointment-step-header">
+                <h2><i class="fa-solid fa-id-card"></i> Bilgileriniz</h2>
+                <p>Randevu için gerekli bilgileri girin</p>
+            </div>
+            <form id="appointment-info-form" class="appointment-info-form">
+                @if (User?.Identity?.IsAuthenticated != true)
+                {
+                <div class="appointment-user-type-selection">
+                    <label class="appointment-radio-option">
+                        <input type="radio" name="appointment-usertype" value="guest" checked />
+                        <span class="appointment-radio-custom"></span>
+                        <span class="appointment-radio-text">Misafir Olarak Devam Et</span>
+                    </label>
+                    <label class="appointment-radio-option">
+                        <input type="radio" name="appointment-usertype" value="account" />
+                        <span class="appointment-radio-custom"></span>
+                        <span class="appointment-radio-text">Giriş Yap</span>
+                    </label>
+                </div>
+
+                <div id="appointment-form-error" class="new-form-error" style="display:none;"></div>
+
+                <!-- Giriş Yap alanı -->
+                <div id="appointment-account-fields" class="appointment-form-section" style="display:none;">
+                        <div id="login-error" class="new-form-error" style="display:none;"></div>
+                    <div class="appointment-form-group">
+                        <label for="appointment-login-email">E-posta</label>
+                        <input type="email" id="appointment-login-email" name="login_email" placeholder="ornek@email.com" autocomplete="email" />
+                    </div>
+                    <div class="appointment-form-group">
+                        <label for="appointment-login-password">Şifre</label>
+                        <input type="password" id="appointment-login-password" name="login_password" placeholder="Şifre" autocomplete="current-password" />
+                    </div>
+                    <div class="appointment-button-group">
+                        <button type="button" class="btn btn-primary" id="appointment-login-submit">
+                            <i class="fas fa-sign-in-alt"></i> Giriş Yap
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Misafir alanları -->
+                <div id="appointment-guest-fields" class="appointment-form-section">
+                    <div class="appointment-form-row">
+                        <div class="appointment-form-group">
+                            <label for="appointment-guest-name">Ad</label>
+                                <input id="appointment-guest-name" name="name" placeholder="Adınız" autocomplete="given-name" required />
+                        </div>
+                        <div class="appointment-form-group">
+                            <label for="appointment-guest-surname">Soyad</label>
+                                <input id="appointment-guest-surname" name="surname" placeholder="Soyadınız" autocomplete="family-name" required />
+                        </div>
+                    </div>
+                    <div class="appointment-form-group">
+                        <label for="appointment-guest-phone">Telefon</label>
+                            <input type="tel" id="appointment-guest-phone" name="phone" placeholder="+49 1XX XXX XX XX" autocomplete="tel" inputmode="tel" pattern="^[0-9+()\-\s]{7,20}$" maxlength="20" required />
+                    </div>
+                    <div class="appointment-form-group">
+                        <label for="appointment-guest-email">E-posta</label>
+                            <input type="email" id="appointment-guest-email" name="email" placeholder="ornek@email.com" autocomplete="email" required />
+                    </div>
+                    <div class="appointment-form-group">
+                        <label for="appointment-guest-note">Notlar (isteğe bağlı)</label>
+                        <textarea id="appointment-guest-note" name="note" placeholder="Özel istekler veya notlar..." rows="3"></textarea>
+                    </div>
+                    <div class="appointment-button-group">
+                        <button type="button" class="btn btn-secondary" id="new-back-to-step-2"><i class="fas fa-arrow-left"></i> Geri</button>
+                        <button type="button" class="btn btn-primary" id="new-to-step-4"><span>Randevuyu Onayla</span> <i class="fas fa-check"></i></button>
+                    </div>
+                </div>
+                }
+                else
+                {
+                    <div class="appointment-form-section">
+                        <div class="appointment-form-group">
+                            <label>Hesap</label>
+                            <div class="appointment-account-summary">
+                                <i class="fas fa-user-check"></i> Giriş yapıldı. Hesabınızla devam ediyorsunuz.
+                            </div>
+                        </div>
+                        <div class="appointment-form-group">
+                            <label>Bilgileriniz</label>
+                            <div class="appointment-summary-list">
+                                <div class="appointment-summary-list-item">
+                                    <span class="list-title">Ad Soyad</span>
+                                    <span class="list-price">@(
+                                        User?.FindFirst("FullName")?.Value
+                                        ?? User?.Identity?.Name
+                                        ?? "-"
+                                    )</span>
+                                </div>
+                                <div class="appointment-summary-list-item">
+                                    <span class="list-title">E-posta</span>
+                                    <span class="list-price">@(
+                                        User?.FindFirst("Email")?.Value
+                                        ?? User?.FindFirst("email")?.Value
+                                        ?? "-"
+                                    )</span>
+                                </div>
+                                <div class="appointment-summary-list-item">
+                                    <span class="list-title">Telefon</span>
+                                    <span class="list-price">@(
+                                        User?.FindFirst("PhoneNumber")?.Value
+                                        ?? User?.FindFirst("phone_number")?.Value
+                                        ?? "-"
+                                    )</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="appointment-button-group">
+                            <button type="button" class="btn btn-secondary" id="new-back-to-step-2"><i class="fas fa-arrow-left"></i> Geri</button>
+                            <button type="button" class="btn btn-primary" id="new-to-step-4"><span>Randevuyu Onayla</span> <i class="fas fa-check"></i></button>
+                        </div>
+                    </div>
+                }
+            </form>
+        </section>
+
+        <!-- 5. Adım: Onay -->
+        <section class="appointment-step-section" id="appointment-step-4">
+            <div class="appointment-success-container">
+                <div class="appointment-success-icon"><i class="fa-solid fa-check-circle"></i></div>
+                <h2>Randevunuz Başarıyla Oluşturuldu!</h2>
+                <p>Randevu detayları e-posta adresinize gönderildi. İşletme onay için sizinle iletişime geçecek.</p>
+                <div class="appointment-button-group">
+                    <button class="btn btn-primary" onclick="window.location.reload()"><i class="fas fa-home"></i> Ana Sayfaya Dön</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="appointment-sidebar" id="appointment-sidebar">
+        <div class="appointment-sidebar-header"><h3><i class="fa-solid fa-clipboard-list"></i> Randevu Özeti</h3></div>
+        <div id="appointment-sidebar-content" class="appointment-sidebar-content"></div>
+        <div id="appointment-sidebar-total" class="appointment-sidebar-total"></div>
+    </aside>
+</div>
+
+<div id="appointment-notification" class="notification" style="display:none;"></div>
+
+@section Scripts {
+    <script src="~/js/appointment.js"></script>
+}

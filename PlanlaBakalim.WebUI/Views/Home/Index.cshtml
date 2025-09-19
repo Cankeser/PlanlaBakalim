@@ -1,0 +1,135 @@
+﻿@model IEnumerable<Category>
+@{
+    ViewData["Title"] = "Anasayfa";
+}
+
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Randevu almak hiç bu kadar <span>kolay</span> olmamıştı</h1>
+                <p>Berber, güzellik salonu, epilasyon, sauna ve daha fazlası için akıllı randevu sistemi. Hızlı ve kolay randevu alın!</p>
+            </div>
+            <form class="search-bar" autocomplete="off">
+                <span><i class="fas fa-search"></i></span>
+                <input type="text" placeholder="Örn: Berber, Güzellik Salonu, İstanbul...">
+                <button type="submit"><i class="fas fa-search"></i></button>
+            </form>
+        </div>
+    </div>
+</section>
+<!-- Popular Categories -->
+<section class="categories" id="categories">
+    <div class="container">
+        <div class="section-header">
+            <h2>Popüler Kategoriler</h2>
+            <p>En çok tercih edilen güzellik ve bakım hizmetleri</p>
+        </div>
+        <div class="category-grid">
+           @foreach (var x in Model)
+            {
+                <div class="category-card" data-category="@x.Name.ToLower().Replace(" ", "-")">
+                    <h3>@x.Name</h3>
+                    <span class="category-count">Kategori</span>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+<!-- Featured Businesses -->
+<section class="featured-businesses">
+    <div class="container">
+        <div class="section-header">
+            <h2>Öne Çıkan İşletmeler</h2>
+            <p>En popüler güzellik ve bakım işletmeleri</p>
+        </div>
+        
+         @await Component.InvokeAsync("BusinessList",new{take=3})
+        
+        <div class="text-center">
+            <a asp-controller="Business" asp-action="Index" class="btn-view-all">Tüm İşletmeleri Gör</a>
+        </div>
+    </div>
+</section>
+<!-- How It Works -->
+<section class="how-it-works" id="how-it-works">
+    <div class="container">
+        <div class="section-header">
+            <h2>Nasıl Çalışır?</h2>
+            <p>3 kolay adımda randevu alın</p>
+        </div>
+        <div class="steps">
+            <div class="step">
+                <div class="step-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3>1. Kategori Seçin</h3>
+                <p>İstediğiniz hizmeti seçin</p>
+            </div>
+            <div class="step">
+                <div class="step-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <h3>2. Konum Girin</h3>
+                <p>Konumunuzu girin veya otomatik tespit ettirin</p>
+            </div>
+            <div class="step">
+                <div class="step-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <h3>3. Randevu Alın</h3>
+                <p>İstediğiniz işletmeden direkt randevu alın</p>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Why Choose Us -->
+<section class="why-choose">
+    <div class="container">
+        <div class="section-header">
+            <h2>Neden Planla Bakalım?</h2>
+            <p>Avantajlarınız bir bakışta</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h3>Hızlı Randevu</h3>
+                <p>Randevunuzu dakikalar içinde alın</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3>Güvenli Ödeme</h3>
+                <p>Güvenli ve kolay ödeme yapın</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <h3>Güvenilir İşletmeler</h3>
+                <p>Kaliteli ve denetlenmiş işletmeler</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <h3>Mobil Uyumlu</h3>
+                <p>Tüm cihazlarda kolayca kullanın</p>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Business CTA -->
+<section class="business-cta">
+    <div class="container">
+        <div class="cta-content">
+            <h2>İşletme Ekle</h2>
+            <p>Daha fazla müşteriye ulaşın ve randevularınızı yönetin</p>
+            <a href="#business-register" class="btn-business">İşletme Ekle</a>
+        </div>
+    </div>
+</section>
